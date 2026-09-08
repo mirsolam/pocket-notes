@@ -1,0 +1,11 @@
+services:
+    react-web:
+        working_dir: /app
+        build: .
+        stdin_open: true
+        ports:
+            - "3100:3100"
+        volumes:
+            - .:/app
+            - /app/node_modules
+        command: npm run dev
