@@ -4,7 +4,7 @@ services:
         build: .
         stdin_open: true
         ports:
-            - "3100:3100"
+            - "127.0.0.1:3100:3100"
         volumes:
             - .:/app
             - /app/node_modules
