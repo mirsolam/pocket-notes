@@ -3,13 +3,28 @@ export default function LoginHome() {
 
 
     return (
-        <div className="flex h-dvh w-dvw justify-center align-content-center p-10">
-            <div className="flex flex-col justify-center align-content-center text-center">
-                <div className="app-logo mb-10" />
+        <div className="flex h-dvh w-dvw justify-center items-center p-10">
+            <div className="flex flex-col justify-center items-center text-center">
+                <div className="flex justify-center items-center">
+                    <div className="app-logo mb-10 w-[10rem]" />
+                </div>
                 <div className="font-bold title mb-10">Login</div>
-                <input className="input mb-10" placeholder="Email" />
-                <input className="input" placeholder="Password" />
-                <button type="button">Login</button>
+                <div className="flex flex-col text-start">
+                    <label htmlFor="login">Email</label>
+                    <input id="login" type="email" className="input mb-10 h-[2.3rem]" />
+                </div>
+                <div className="flex flex-col text-start">
+                    <label htmlFor="password">Password</label>
+                    <div className="flex relative justify-end items-center">
+                        <div className="show-password-icon w-[1.7rem] fixed pr-2" />
+                        <input id="password" type="password" className="input h-[2.3rem]" />
+                    </div>
+                </div>
+                <div className="my-10">
+                    <button className="btn-submit h-[3rem] w-[10rem]" type="button">Login</button>
+                </div>
+                <div>Don't have an account? Sign-up</div>
+                <div>Forgot your password?</div>
             </div>
         </div>
     )
