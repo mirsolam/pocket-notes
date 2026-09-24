@@ -28,7 +28,7 @@ export default function LoginHome() {
                     <button className="btn-submit h-[3rem] w-[10rem]" type="button">Login</button>
                 </div>
                 <div>Don't have an account? <a href="/signup" className="text-blue-700 underline decoration-blue-700">Sign-up</a></div>
-                <div>Forgot your password?</div>
+                <div><a href="/forgot-password" className="text-blue-700 underline decoration-blue-700">Forgot your password?</a></div>
             </div>
         </div>
     )
