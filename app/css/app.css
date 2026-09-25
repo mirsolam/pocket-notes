@@ -57,8 +57,10 @@ body{
 .note{
   background-color: var(--light-note-background-color);
   color: black;
-  border: 2px solid var(--light-note-border-color);
+  border: 0.4rem solid var(--light-note-border-color);
   border-radius: 0.5rem;
+
+  z-index: 0;
 }
 
 .text-toolbar{
@@ -66,6 +68,35 @@ body{
   color: black;
   border: 2px solid var(--light-contrast-color);
   border-radius: 0.5rem;
+}
+
+.note.right{
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform-origin: right center;
+  transform: rotateY(0deg);
+}
+
+.note.flip-right{
+  z-index: 1;
+  background-color: red;
+  transform-origin: right center;
+  transform: rotateY(180deg);
+  transition: all 1s;
+}
+
+.note.left{
+  transform-origin: left center;
+  transform: rotateY(0deg);
+}
+
+.note.flip-left{
+  background-color: blue;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: rotateY(180deg);
+  transition: all 1s;
 }
 
 

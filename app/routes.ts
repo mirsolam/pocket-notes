@@ -6,6 +6,6 @@ export default [
     route("signup", "routes/signup.tsx"),
     route("forgot-password", "routes/forgotPassword.tsx"),
     route("note/:nid", "routes/note.tsx"),
-
+    route("notebook/:nid", "routes/notebook.tsx"),
 
 ] satisfies RouteConfig;

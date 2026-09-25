@@ -5,7 +5,7 @@ export default function DashboardLanding() {
     return (
         <div>
             <a className="btn-submit" href="/note/new">Create new note</a>
-            <a className="btn-submit">Create new notebook</a>
+            <a className="btn-submit" href="/notebook/new">Create new notebook</a>
         </div>
     )
 }
