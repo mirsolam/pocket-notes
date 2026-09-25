@@ -54,4 +54,18 @@ body{
   border-radius: 0.5rem;
 }
 
+.note{
+  background-color: var(--light-note-background-color);
+  color: black;
+  border: 2px solid var(--light-note-border-color);
+  border-radius: 0.5rem;
+}
+
+.text-toolbar{
+  background-color: var(--light-btn-submit-color);
+  color: black;
+  border: 2px solid var(--light-contrast-color);
+  border-radius: 0.5rem;
+}
+
 

@@ -1,7 +1,7 @@
 import GeneralInput from "~/pages/component/generalInput";
 import PasswordInput from "~/pages/component/passwordInput";
 
-export default function SignUpHome() {
+export default function SignUpLanding() {
 
     return (
         <div className="flex h-dvh w-dvw justify-center items-center p-10">

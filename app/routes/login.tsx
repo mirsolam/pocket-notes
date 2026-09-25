@@ -1,4 +1,4 @@
-import LoginHome from "~/pages/home/loginHome";
+import LoginLanding from "~/pages/landing/loginLanding";
 import type { Route } from "./+types/login";
 
 
@@ -10,5 +10,5 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Dashboard() {
-    return <LoginHome />
+    return <LoginLanding />
 }

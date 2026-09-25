@@ -1,4 +1,4 @@
-import DashboardHome from "~/pages/home/dashboardHome";
+import DashboardLanding from "~/pages/landing/dashboardLanding";
 import type { Route } from "./+types/dashboard";
 
 export function meta({ }: Route.MetaArgs) {
@@ -9,5 +9,5 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Dashboard() {
-  return <DashboardHome />
+  return <DashboardLanding />
 }

@@ -1,4 +1,4 @@
-import SignUpHome from "~/pages/home/signupHome";
+import SignUpLanding from "~/pages/landing/signupLanding";
 import type { Route } from "./+types/signup";
 
 export function meta({ }: Route.MetaArgs) {
@@ -9,5 +9,5 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function SignUp() {
-    return (<SignUpHome />)
+    return (<SignUpLanding />)
 }
