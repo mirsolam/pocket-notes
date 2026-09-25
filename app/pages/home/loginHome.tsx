@@ -1,10 +1,8 @@
+import PasswordInput from "../component/passwordInput";
 
 export default function LoginHome() {
 
-    function onShowPasswordClick() {
-        const passwordElement: HTMLInputElement = document.getElementById("password") as HTMLInputElement
-        passwordElement.type = passwordElement.type === "password" ? "text" : "password"
-    }
+
 
     return (
         <div className="flex h-dvh w-dvw justify-center items-center p-10">
@@ -18,11 +16,7 @@ export default function LoginHome() {
                     <input id="login" type="email" className="input mb-10 h-[2.3rem]" />
                 </div>
                 <div className="flex flex-col text-start">
-                    <label htmlFor="password">Password</label>
-                    <div className="flex relative justify-end items-center">
-                        <div className="show-password-icon w-[1.7rem] fixed pr-2" onClick={onShowPasswordClick} />
-                        <input id="password" type="password" className="input h-[2.3rem]" />
-                    </div>
+                    <PasswordInput displayName="Password" id="password-login" />
                 </div>
                 <div className="my-10">
                     <button className="btn-submit h-[3rem] w-[10rem]" type="button">Login</button>
