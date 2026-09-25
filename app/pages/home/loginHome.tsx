@@ -1,5 +1,5 @@
-import GeneralInput from "../component/generalInput";
-import PasswordInput from "../component/passwordInput";
+import GeneralInput from "~/pages/component/generalInput";
+import PasswordInput from "~/pages/component/passwordInput";
 
 export default function LoginHome() {
 
