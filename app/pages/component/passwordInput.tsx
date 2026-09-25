@@ -17,7 +17,7 @@ export default function PasswordInput({
 
     return (
         <>
-            <label htmlFor="password">{displayName}</label>
+            <label htmlFor={id}>{displayName}</label>
             <div className="flex relative justify-end items-center">
                 <div className="show-password-icon w-[1.7rem] fixed pr-2" onClick={onShowPasswordClick} />
                 <input id={id} type="password" className="input h-[2.3rem]" />

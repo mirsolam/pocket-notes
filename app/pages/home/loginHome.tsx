@@ -1,8 +1,7 @@
+import GeneralInput from "../component/generalInput";
 import PasswordInput from "../component/passwordInput";
 
 export default function LoginHome() {
-
-
 
     return (
         <div className="flex h-dvh w-dvw justify-center items-center p-10">
@@ -11,9 +10,8 @@ export default function LoginHome() {
                     <div className="app-logo mb-10 w-[10rem]" />
                 </div>
                 <div className="font-bold title mb-10">Login</div>
-                <div className="flex flex-col text-start">
-                    <label htmlFor="login">Email</label>
-                    <input id="login" type="email" className="input mb-10 h-[2.3rem]" />
+                <div className="flex flex-col text-start mb-10">
+                    <GeneralInput displayName="Email" id="email-login" type="email" />
                 </div>
                 <div className="flex flex-col text-start">
                     <PasswordInput displayName="Password" id="password-login" />
