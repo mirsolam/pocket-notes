@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --light-background-color: #FAEDCD;
+  --light-contrast-color: #785737;
+  --light-text-color: black;
+  --light-btn-submit-color: #D4A373;
+  --light-input-border-color: #D4A373;
+  --light-note-background-color: #E9EDC9;
+  --light-note-border-color: #CCD5AE;
+  --off-white-color: #FEFAE0
+}
+
+/* html,
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+} */
+
+html,
+body{
+  background-color: var(--light-background-color);
+  color: var(--light-text-color);
+}
+
+.title{
+  font-size: xx-large;
+}
+
+.input{
+  background-color: var(--off-white-color);
+  border: 2px solid var(--light-input-border-color);
+  border-radius: 0.5rem;
+  padding: 0 0.5rem
+}
+
+.btn-submit{
+  background-color: var(--light-btn-submit-color);
+  color: black;
+  border: 2px solid var(--light-contrast-color);
+  border-radius: 0.5rem;
+}
+
+
+
