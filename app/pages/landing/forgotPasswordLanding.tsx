@@ -2,7 +2,7 @@ import { useState } from "react";
 import GeneralInput from "../component/generalInput";
 import PasswordInput from "../component/passwordInput";
 
-export default function ForgotPasswordHome() {
+export default function ForgotPasswordLanding() {
     const [showChangePassword, setShowChangePassword] = useState(false)
 
     function onEmailSubmit() {

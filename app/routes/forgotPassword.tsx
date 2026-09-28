@@ -1,4 +1,4 @@
-import ForgotPasswordHome from "~/pages/home/forgotPasswordHome";
+import ForgotPasswordLanding from "~/pages/landing/forgotPasswordLanding";
 import type { Route } from "./+types/forgotPassword";
 
 export function meta({ }: Route.MetaArgs) {
@@ -9,5 +9,5 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function ForgotPassword() {
-    return (<ForgotPasswordHome />)
+    return (<ForgotPasswordLanding />)
 }

@@ -54,4 +54,52 @@ body{
   border-radius: 0.5rem;
 }
 
+.note{
+  background: linear-gradient(to left, var(--light-note-background-color));
+  color: black;
+  border: 0.4rem solid var(--light-note-border-color);
+  border-radius: 0.5rem;
+
+  z-index: 1;
+}
+
+.text-toolbar{
+  background-color: var(--light-btn-submit-color);
+  color: black;
+  border: 2px solid var(--light-contrast-color);
+  border-radius: 0.5rem;
+}
+
+.note.prop{
+  z-index: 0;
+}
+
+
+.note.right{
+  transform-origin: right center;
+  transform: rotateY(0deg);
+}
+
+.note.flip-right{
+  z-index: 2;
+  background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
+  transform-style: preserve-3d;
+  transform-origin: right center;
+  transform: perspective(800px) rotateY(180deg);
+  transition: background-color 1s ease, transform 1s ease;
+}
+
+.note.left{
+  transform-origin: left center;
+  transform: rotateY(0deg);
+}
+
+.note.flip-left{
+  background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: perspective(800px) rotateY(-179deg);
+  transition: background-color 1s ease, transform 1s ease;
+}
+
 
