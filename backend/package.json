@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "pocket notes backend",
+  "homepage": "https://github.com/mirsolam/pocket-notes#readme",
+  "bugs": {
+    "url": "https://github.com/mirsolam/pocket-notes/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirsolam/pocket-notes.git"
+  },
+  "license": "ISC",
+  "author": "pocket-notes",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
