@@ -19,3 +19,15 @@ services:
             - ./backend:/app/backend
             - /app/backend/node_modules
         command: npx nodemon index.js
+    mongo-database:
+        image: "docker.io/mongodb/mongodb-community-server:8.0.4-ubi9"
+        ports:
+            - "127.0.0.1:4000:27017"
+        environment:
+            GLIBC_TUNABLES: glibc.pthread.rseq=0
+            MONGODB_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+            MONGODB_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+        volumes:
+            - mongodb_data:/data/db
+volumes:
+    mongodb_data:
