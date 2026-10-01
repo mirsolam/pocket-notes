@@ -9,3 +9,13 @@ services:
             - .:/app
             - /app/node_modules
         command: npm run dev
+    node-backend:
+        working_dir: /app/backend
+        build: .
+        stdin_open: true
+        ports:
+            - "127.0.0.1:3500:3500"
+        volumes:
+            - ./backend:/app/backend
+            - /app/backend/node_modules
+        command: npx nodemon index.js
