@@ -1,11 +1,47 @@
 services:
     react-web:
         working_dir: /app
-        build: .
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        image: pocket-notes-frontend:latest
         stdin_open: true
+        env_file:
+            - .env
         ports:
             - "127.0.0.1:3100:3100"
         volumes:
             - .:/app
             - /app/node_modules
         command: npm run dev
+
+
+    node-backend:
+        working_dir: /app/backend
+        build: 
+            context: ./backend
+            dockerfile: Dockerfile
+        image: pocket-notes-backend:latest
+        env_file:
+            - .env
+        stdin_open: true
+        ports:
+            - "127.0.0.1:3500:3500"
+        volumes:
+            - ./backend:/app/backend
+            - /app/backend/node_modules
+        command: npx nodemon index.js
+
+
+    mongo-database:
+        image: "docker.io/mongodb/mongodb-community-server:8.0.4-ubi9"
+        ports:
+            - "127.0.0.1:4000:27017"
+        environment:
+            GLIBC_TUNABLES: glibc.pthread.rseq=0
+            MONGODB_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+            MONGODB_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+        volumes:
+            - mongodb_data:/data/db
+volumes:
+    mongodb_data:
