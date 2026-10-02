@@ -3,7 +3,7 @@ FROM node:26-bookworm-slim
 
 RUN npm install -g npm@12.0.2
 
-WORKDIR /app
+WORKDIR /app/backend
 
 # Install dependencies first for better layer caching
 COPY package*.json ./
@@ -14,4 +14,4 @@ RUN npm install
 COPY . .
 
 
-EXPOSE 3100
+EXPOSE 3500
