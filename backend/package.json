@@ -21,6 +21,8 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
     "mongodb": "^7.7.0",
     "nodemon": "^3.1.14"
   }
