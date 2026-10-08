@@ -12,6 +12,29 @@ async function verifyPassword(plainPassword, storedHash) {
     return match;
 }
 
+async function checkAndUpdateSession(sessionId) {
+    try {
+        const session = await getDB()
+            .collection('sessions')
+            .findOne({ _id: sessionId })
+
+        if (!session) return false
+
+        await getDB()
+            .collection('sessions')
+            .updateOne(
+                { _id: sessionId },
+                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
+            )
+
+        return true
+    }
+    catch (error) {
+        return false
+    }
+
+}
+
 async function regitserAccount(req, res) {
     try {
         const { name, email, password } = req.body
@@ -74,27 +97,15 @@ async function login(req, res) {
 
 async function checkSessionValidity(req, res) {
     try {
-        console.log(req.cookies)
-        const session = await getDB()
-            .collection('sessions')
-            .findOne({ _id: req.cookies.sessionId })
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
 
-        if (!session) return res.status(401).json({ status: "failed", message: "Session expired." })
-
-        await getDB()
-            .collection('sessions')
-            .updateOne(
-                { _id: req.cookies.sessionId },
-                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
-            )
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
 
         return res.json({ status: "success", message: "Session is valid." })
     }
     catch (error) {
-        console.log(error)
         return res.status(500).json({ status: "failed", message: "Internal error." })
-
     }
 }
 
-module.exports = { regitserAccount, login, checkSessionValidity };
+module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession };
