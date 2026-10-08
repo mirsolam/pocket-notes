@@ -1,5 +1,20 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { checkSessionValidity } from "../api/accountAPI";
 
 export default function NoteLanding() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        checkSessionValidity()
+            .then(data => {
+                if (data.status !== "success") navigate("/login")
+            })
+            .catch(error => {
+                navigate("/login")
+            })
+    })
+
     return (
         <div className="flex flex-col h-dvh justify-center items-center">
             <div className="note max-h-[70%] h-[70%] w-[70dvw] mb-10 p-3 overflow-y-auto" contentEditable="true" />

@@ -1,17 +1,27 @@
 import GeneralInput from "~/pages/component/generalInput";
 import PasswordInput from "~/pages/component/passwordInput";
-import { login } from "../api/accountAPI";
+import { checkSessionValidity, login } from "../api/accountAPI";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 export default function LoginLanding() {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        checkSessionValidity()
+            .then((data) => {
+                if (data.status === "success") navigate("/")
+            })
+            .catch(() => {
+            })
+    })
 
     function onLoginClick() {
         const email = document.getElementById("email-login") as HTMLInputElement
         const password = document.getElementById("password-login") as HTMLInputElement
 
         const res = login({ email: email.value, password: password.value })
-        res.then(data => {
+        res.then(() => {
             navigate("/")
         })
     }

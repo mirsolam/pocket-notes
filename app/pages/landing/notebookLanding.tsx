@@ -1,5 +1,21 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { checkSessionValidity } from "../api/accountAPI";
 
 export default function NotebookLanding() {
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        checkSessionValidity()
+            .then(data => {
+                if (data.status !== "success") navigate("/login")
+            })
+            .catch(error => {
+                navigate("/login")
+            })
+    })
+
 
     function flipPage(e: React.MouseEvent<HTMLDivElement>) {
         const chevron: HTMLDivElement = e.target as HTMLDivElement

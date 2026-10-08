@@ -1,6 +1,19 @@
-import { Outlet } from "react-router";
+import { useEffect } from "react"
+import { checkSessionValidity } from "../api/accountAPI"
+import { useNavigate } from "react-router";
 
 export default function DashboardLanding() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        checkSessionValidity()
+            .then(data => {
+                if (data.status !== "success") navigate("/login")
+            })
+            .catch(error => {
+                navigate("/login")
+            })
+    })
 
     return (
         <div>
