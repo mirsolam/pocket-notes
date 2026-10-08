@@ -48,11 +48,13 @@ async function login(req, res) {
 
         const match = verifyPassword(password, user.password)
 
-        await getDB().collection("sessions").insertOne({
-            _id: sessionId,
-            userId: user._id,
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        });
+        await getDB()
+            .collection("sessions")
+            .insertOne({
+                _id: sessionId,
+                userId: user._id,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            });
 
         if (match) {
             res.cookie("sessionId", sessionId, {
@@ -78,6 +80,13 @@ async function checkSessionValidity(req, res) {
             .findOne({ _id: req.cookies.sessionId })
 
         if (!session) return res.status(401).json({ status: "failed", message: "Session expired." })
+
+        await getDB()
+            .collection('sessions')
+            .updateOne(
+                { _id: req.cookies.sessionId },
+                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
+            )
 
         return res.json({ status: "success", message: "Session is valid." })
     }
