@@ -19,10 +19,20 @@ export async function login(data: { email: string, password: string }) {
 
     const res = await fetch(`${API}/users/login`, {
         method: 'POST',
+        credentials: "include",
         body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json"
         }
+    })
+
+    return res.json()
+}
+
+export async function checkSessionValidity() {
+    const res = await fetch(`${API}/users/checksession`, {
+        method: 'GET',
+        credentials: "include",
     })
 
     return res.json()
