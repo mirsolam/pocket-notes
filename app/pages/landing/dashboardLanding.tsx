@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { checkSessionValidity } from "../api/accountAPI"
 import { useNavigate } from "react-router";
 import { createNote } from "../api/noteAPI";
+import NotePaper from "../component/notePaper";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
@@ -18,12 +19,54 @@ export default function DashboardLanding() {
 
     function createNoteOnClick() {
         createNote()
+            .then(data => {
+                if (data.status === "success")
+                    navigate("/note/new", { state: { id: data.data.insertedId } })
+            })
     }
 
     return (
-        <div>
-            <a className="btn-submit" href="/note/new" onClick={createNoteOnClick}>Create new note</a>
-            <a className="btn-submit" href="/notebook/new">Create new notebook</a>
+        <div className="flex h-dvh w-dvw p-10 flex-col">
+            <div className="flex items-center">
+                <div>Notes</div>
+                <hr className="hr-line w-dvw ml-5 mr-1" />
+            </div>
+            <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+            </div>
+            <div className="flex items-center mt-5">
+                <div>Notebooks</div>
+                <hr className="hr-line w-dvw ml-5 mr-1 overflow-y-auto" />
+            </div>
+            <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+                <NotePaper />
+            </div>
+
+            <div className="flex flex-col">
+                <button type="button" className="btn-submit" onClick={createNoteOnClick}>Create new note</button>
+                <a className="btn-submit" href="/notebook/new">Create new notebook</a>
+            </div>
+
         </div>
     )
 }

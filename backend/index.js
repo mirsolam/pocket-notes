@@ -1,7 +1,7 @@
 const express = require('express');
 const { connectMongodb, closeDB } = require('./components/db');
 const { regitserAccount, login, checkSessionValidity } = require('./components/account')
-const { createNote } = require('./components/note')
+const { createNote, saveNote, getNote } = require('./components/note')
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT;
@@ -22,6 +22,11 @@ app.post('/users/register', regitserAccount)
 app.get('/users/checksession', checkSessionValidity)
 
 app.post('/notes/create', createNote)
+
+app.post('/notes/save', saveNote)
+
+app.get('/notes/:id', getNote)
+
 
 async function startServer() {
     try {
