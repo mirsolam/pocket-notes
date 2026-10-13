@@ -32,3 +32,12 @@ export async function getNoteById(id: string) {
 
     return res.json()
 }
+
+export async function getDashboardList() {
+    const res = await fetch(`${API}/dashboard/`, {
+        method: 'GET',
+        credentials: "include",
+    })
+
+    return res.json()
+}

@@ -45,6 +45,7 @@ body{
   color: black;
   border: 2px solid var(--light-contrast-color);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .btn-cancel{
@@ -52,6 +53,7 @@ body{
   color: black;
   border: 2px solid var(--light-input-border-color);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .note{
@@ -103,6 +105,13 @@ body{
 
 .hr-line{
   border: 1px var(--light-contrast-color) solid;
+}
+
+.dashboard-note{
+  padding: 1rem;
+  background-color: var(--light-note-border-color);
+  border: 2px var(--light-contrast-color) solid;
+  border-radius: 0.5rem;
 }
 
 

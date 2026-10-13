@@ -1,27 +1,32 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { checkSessionValidity } from "../api/accountAPI"
 import { useNavigate } from "react-router";
-import { createNote } from "../api/noteAPI";
+import { createNote, getDashboardList } from "../api/noteAPI";
 import NotePaper from "../component/notePaper";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
+    const [notes, setNotes] = useState(null as unknown as Array<{ _id: string, content: string }>)
 
     useEffect(() => {
         checkSessionValidity()
             .then(data => {
                 if (data.status !== "success") navigate("/login")
+                getDashboardList()
+                    .then(res => {
+                        setNotes(res.data.notes)
+                    })
             })
             .catch(error => {
                 navigate("/login")
             })
-    })
+    }, [])
 
     function createNoteOnClick() {
         createNote()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/note/new", { state: { id: data.data.insertedId } })
+                    navigate("/note", { state: { id: data.data.insertedId } })
             })
     }
 
@@ -32,34 +37,18 @@ export default function DashboardLanding() {
                 <hr className="hr-line w-dvw ml-5 mr-1" />
             </div>
             <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
+                {notes && notes.map((item) => {
+                    return (
+                        <NotePaper note={item} key={item._id} />
+                    )
+                })}
             </div>
             <div className="flex items-center mt-5">
                 <div>Notebooks</div>
                 <hr className="hr-line w-dvw ml-5 mr-1 overflow-y-auto" />
             </div>
             <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
-                <NotePaper />
+
             </div>
 
             <div className="flex flex-col">
