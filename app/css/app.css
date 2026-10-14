@@ -114,4 +114,7 @@ body{
   border-radius: 0.5rem;
 }
 
+.logout{
+  cursor: pointer;
+}
 

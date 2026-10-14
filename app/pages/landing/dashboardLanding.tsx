@@ -3,6 +3,7 @@ import { checkSessionValidity } from "../api/accountAPI"
 import { useNavigate } from "react-router";
 import { createNote, getDashboardList } from "../api/noteAPI";
 import NotePaper from "../component/notePaper";
+import Logout from "../component/logout";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function DashboardLanding() {
 
     return (
         <div className="flex h-dvh w-dvw p-10 flex-col">
+            <Logout />
             <div className="flex items-center">
                 <div>Notes</div>
                 <hr className="hr-line w-dvw ml-5 mr-1" />

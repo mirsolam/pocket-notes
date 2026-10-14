@@ -2,6 +2,23 @@ const bcrypt = require('bcrypt');
 const { getDB } = require('./db');
 const crypto = require("crypto");
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}
+
+function setCookies(res) {
+    res.cookie("sessionId", sessionId, cookieOptions);
+    res.cookie("userId", user._id, cookieOptions);
+}
+
+function removeCookies(res) {
+    res.clearCookie("sessionId", cookieOptions);
+    res.clearCookie("userId", cookieOptions);
+}
+
 async function hashPassword(plainPassword) {
     const saltRounds = 10;
     return await bcrypt.hash(plainPassword, saltRounds);
@@ -80,12 +97,7 @@ async function login(req, res) {
             });
 
         if (match) {
-            res.cookie("sessionId", sessionId, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
+            setCookies(res)
             res.json({ status: "success", message: "Valid credentials." })
         }
         else res.status(401).json({ status: "fail", message: "Invalid credentials." })
@@ -108,4 +120,19 @@ async function checkSessionValidity(req, res) {
     }
 }
 
-module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession };
+async function logout(req, res) {
+    try {
+        await getDB()
+            .collection('sessions')
+            .deleteOne({ _id: req.cookies.sessionId })
+
+        removeCookies(res)
+        return res.json({ status: "success", message: "Logout successfully." })
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: "failed", message: "Internal error." })
+    }
+}
+
+module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession, logout };

@@ -37,3 +37,12 @@ export async function checkSessionValidity() {
 
     return res.json()
 }
+
+export async function logout() {
+    const res = await fetch(`${API}/users/logout`, {
+        method: 'GET',
+        credentials: "include",
+    })
+
+    return res.json()
+}
