@@ -1,13 +1,10 @@
+import type { Password } from "../types/types"
 
 export default function PasswordInput({
     displayName,
     id
 }
-    :
-    {
-        displayName: string;
-        id: string;
-    }
+    : Password
 ) {
 
     function onShowPasswordClick() {

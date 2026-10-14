@@ -1,3 +1,5 @@
+import type { Notebook } from "../types/types"
+
 const API = import.meta.env.VITE_APP_API_URL
 
 export async function createNotebook() {
@@ -9,8 +11,8 @@ export async function createNotebook() {
     return res.json()
 }
 
-export async function saveNotebook(data: { id: string, title: string, currentLeft: number, currentRight: number, content: Array<string> }) {
-    if (!data.id || !data.content || data.currentLeft === null || data.currentLeft === undefined || !data.currentRight) return { status: "failed", message: "Invalid values." }
+export async function saveNotebook(data: Notebook) {
+    if (!data._id || !data.content || data.currentLeft === null || data.currentLeft === undefined || !data.currentRight) return { status: "failed", message: "Invalid values." }
     const res = await fetch(`${API}/notebooks/save`, {
         method: 'POST',
         credentials: "include",

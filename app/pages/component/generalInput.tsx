@@ -1,3 +1,4 @@
+import type { GeneralInput } from "../types/types"
 
 export default function GeneralInput(
     {
@@ -6,13 +7,7 @@ export default function GeneralInput(
         type,
         required,
     }
-        :
-        {
-            displayName: string;
-            id: string;
-            type: "text" | "email";
-            required: boolean
-        }
+        : GeneralInput
 ) {
 
     function onBlur(e: React.FocusEvent<HTMLInputElement>) {

@@ -1,23 +1,12 @@
 import { useNavigate } from "react-router";
+import type { Notebook } from "../types/types";
 
-export default function NotebookCover(
-    { notebook }
-        : {
-            notebook: {
-                _id: string;
-                userId: string;
-                currentLeft: string;
-                currentRight: string;
-                title: string;
-                content: Array<string>;
-            }
-        }
-) {
+export default function NotebookCover({ notebook }: { notebook: Notebook }) {
     const navigate = useNavigate();
 
     function notebookCoverOnClick(e: React.MouseEvent<HTMLDivElement>) {
         const element = e.target as HTMLDivElement
-        navigate("/notebook", { state: { id: element.id } })
+        navigate("/notebook", { state: { _id: element.id } })
     }
 
     return (

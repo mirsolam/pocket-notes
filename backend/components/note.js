@@ -20,11 +20,11 @@ async function saveNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
-        const { id, content } = req.body
+        const { _id, content } = req.body
         const note = await getDB()
             .collection('notes')
             .findOneAndUpdate(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(_id) },
                 { $set: { content: content } },
                 { returnDocument: "after" }
             )
@@ -40,11 +40,11 @@ async function getNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
-        const id = req.params.id
+        const _id = req.params._id
         const note = await getDB()
             .collection('notes')
             .findOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(_id) },
                 { returnDocument: "after" }
             )
         res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })

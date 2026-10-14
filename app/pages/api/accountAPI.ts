@@ -1,6 +1,8 @@
+import type { Login, User } from "../types/types"
+
 const API = import.meta.env.VITE_APP_API_URL
 
-export async function registerAccount(data: { name: string, email: string, password: string }) {
+export async function registerAccount(data: User) {
     if (!data.name || !data.email || !data.password) return { status: "failed", message: "Invalid values." }
 
     const res = await fetch(`${API}/users/register`, {
@@ -14,7 +16,7 @@ export async function registerAccount(data: { name: string, email: string, passw
     return res.json()
 }
 
-export async function login(data: { email: string, password: string }) {
+export async function login(data: Login) {
     if (!data.email || !data.password) return { status: "failed", message: "Invalid values." }
 
     const res = await fetch(`${API}/users/login`, {

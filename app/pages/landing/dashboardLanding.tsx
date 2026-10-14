@@ -7,18 +7,12 @@ import Logout from "../component/logout";
 import { createNotebook } from "../api/notebookAPI";
 import { getDashboardList } from "../api/dashboardAPI";
 import NotebookCover from "../component/notebookCover";
+import type { Note, Notebook } from "../types/types";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
-    const [notes, setNotes] = useState(null as unknown as Array<{ _id: string, content: string }>)
-    const [notebooks, setNotebookss] = useState(null as unknown as Array<{
-        _id: string,
-        userId: string,
-        currentLeft: string,
-        currentRight: string,
-        title: string,
-        content: Array<string>,
-    }>)
+    const [notes, setNotes] = useState(null as unknown as Array<Note>)
+    const [notebooks, setNotebookss] = useState(null as unknown as Array<Notebook>)
 
     useEffect(() => {
         checkSessionValidity()
@@ -39,7 +33,7 @@ export default function DashboardLanding() {
         createNote()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/note", { state: { id: data.data.insertedId } })
+                    navigate("/note", { state: { _id: data.data.insertedId } })
             })
     }
 
@@ -47,7 +41,7 @@ export default function DashboardLanding() {
         createNotebook()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/notebook", { state: { id: data.data.insertedId } })
+                    navigate("/notebook", { state: { _id: data.data.insertedId } })
             })
     }
 

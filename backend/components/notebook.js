@@ -21,11 +21,11 @@ async function saveNotebook(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
-        const { id, title, currentLeft, currentRight, content } = req.body
+        const { _id, title, currentLeft, currentRight, content } = req.body
         const note = await getDB()
             .collection('notebooks')
             .findOneAndUpdate(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(_id) },
                 { $set: { title: title, currentLeft: currentLeft, currentRight: currentRight, content: content } },
                 { returnDocument: "after" }
             )
@@ -41,11 +41,11 @@ async function getNotebook(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
-        const id = req.params.id
+        const _id = req.params._id
         const note = await getDB()
             .collection('notebooks')
             .findOne(
-                { _id: new ObjectId(id) },
+                { _id: new ObjectId(_id) },
                 { returnDocument: "after" }
             )
         res.status(200).json({ status: "success", data: note, message: "Notebook retrieved successfully." })

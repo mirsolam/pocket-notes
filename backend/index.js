@@ -30,13 +30,13 @@ app.post('/notes/create', createNote)
 
 app.post('/notes/save', saveNote)
 
-app.get('/notes/:id', getNote)
+app.get('/notes/:_id', getNote)
 
 app.post('/notebooks/create', createNotebook)
 
 app.post('/notebooks/save', saveNotebook)
 
-app.get('/notebooks/:id', getNotebook)
+app.get('/notebooks/:_id', getNotebook)
 
 app.get('/dashboard/', getDashboardList)
 

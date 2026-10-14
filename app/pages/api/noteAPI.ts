@@ -1,3 +1,5 @@
+import type { Note } from "../types/types"
+
 const API = import.meta.env.VITE_APP_API_URL
 
 export async function createNote() {
@@ -9,8 +11,8 @@ export async function createNote() {
     return res.json()
 }
 
-export async function saveNote(data: { id: string, content: string }) {
-    if (!data.id || !data.content) return { status: "failed", message: "Invalid values." }
+export async function saveNote(data: Note) {
+    if (!data._id || !data.content) return { status: "failed", message: "Invalid values." }
     const res = await fetch(`${API}/notes/save`, {
         method: 'POST',
         credentials: "include",
@@ -23,9 +25,9 @@ export async function saveNote(data: { id: string, content: string }) {
     return res.json()
 }
 
-export async function getNote(id: string) {
-    if (!id) return { status: "failed", message: "Invalid values." }
-    const res = await fetch(`${API}/notes/${id}`, {
+export async function getNote(_id: string) {
+    if (!_id) return { status: "failed", message: "Invalid values." }
+    const res = await fetch(`${API}/notes/${_id}`, {
         method: 'GET',
         credentials: "include",
     })

@@ -15,8 +15,8 @@ export default function NotebookLanding() {
             .then(data => {
                 if (data.status !== "success") navigate("/login")
 
-                if (location.state.id)
-                    getNotebook(location.state.id)
+                if (location.state._id)
+                    getNotebook(location.state._id)
                         .then(res => {
                             const notebookTitle = document.getElementById("notebook-title") as HTMLInputElement
                             const leftSidePage: HTMLDivElement = document.getElementById("page-leftside") as HTMLDivElement
@@ -119,10 +119,10 @@ export default function NotebookLanding() {
     }
 
     function backButtonOnClick() {
-        const id = location.state.id
+        const id = location.state._id
         const title = document.getElementById("notebook-title") as HTMLInputElement
         saveContent()
-        saveNotebook({ id: id, title: title.value, currentLeft: pageNumberOrderRef.current.currentLeft, currentRight: pageNumberOrderRef.current.currentRight, content: pageContentOrderRef.current })
+        saveNotebook({ _id: id, title: title.value, currentLeft: pageNumberOrderRef.current.currentLeft, currentRight: pageNumberOrderRef.current.currentRight, content: pageContentOrderRef.current })
             .then(res => {
                 navigate("/")
             })

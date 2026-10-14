@@ -13,8 +13,8 @@ export default function NoteLanding() {
                 .then(data => {
                     if (data.status !== "success") navigate("/login")
 
-                    if (location.state.id)
-                        getNote(location.state.id)
+                    if (location.state._id)
+                        getNote(location.state._id)
                             .then(res => {
                                 const content = document.getElementById("notecontent") as HTMLDivElement
 
@@ -34,9 +34,9 @@ export default function NoteLanding() {
     })
 
     function backButtonOnClick() {
-        const id = location.state.id
+        const id = location.state._id
         const content = document.getElementById("notecontent") as HTMLDivElement
-        saveNote({ id: id, content: content.textContent })
+        saveNote({ _id: id, content: content.textContent })
             .then(res => {
                 navigate("/")
             })
