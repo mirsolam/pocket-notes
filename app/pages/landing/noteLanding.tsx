@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { checkSessionValidity } from "../api/accountAPI";
-import { getNoteById, saveNote } from "../api/noteAPI";
+import { getNote, saveNote } from "../api/noteAPI";
 
 export default function NoteLanding() {
     const navigate = useNavigate()
@@ -14,7 +14,7 @@ export default function NoteLanding() {
                     if (data.status !== "success") navigate("/login")
 
                     if (location.state.id)
-                        getNoteById(location.state.id)
+                        getNote(location.state.id)
                             .then(res => {
                                 const content = document.getElementById("notecontent") as HTMLDivElement
 
@@ -38,7 +38,6 @@ export default function NoteLanding() {
         const content = document.getElementById("notecontent") as HTMLDivElement
         saveNote({ id: id, content: content.textContent })
             .then(res => {
-                //console.log("save: ", res)
                 navigate("/")
             })
     }

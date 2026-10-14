@@ -23,18 +23,9 @@ export async function saveNote(data: { id: string, content: string }) {
     return res.json()
 }
 
-export async function getNoteById(id: string) {
+export async function getNote(id: string) {
     if (!id) return { status: "failed", message: "Invalid values." }
     const res = await fetch(`${API}/notes/${id}`, {
-        method: 'GET',
-        credentials: "include",
-    })
-
-    return res.json()
-}
-
-export async function getDashboardList() {
-    const res = await fetch(`${API}/dashboard/`, {
         method: 'GET',
         credentials: "include",
     })

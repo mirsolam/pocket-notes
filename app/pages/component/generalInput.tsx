@@ -19,7 +19,7 @@ export default function GeneralInput(
         const element = e.currentTarget as HTMLInputElement
         const error = document.getElementById(`${element.id}-error`) as HTMLSpanElement
 
-        if (element.value.trim() === '') {
+        if (element.value.trim() === '' && required) {
             element.ariaInvalid = "true"
             error!.textContent = `Please enter a valid ${displayName.toLowerCase()}.`
         }

@@ -1,13 +1,24 @@
 import { useEffect, useRef, useState } from "react"
 import { checkSessionValidity } from "../api/accountAPI"
 import { useNavigate } from "react-router";
-import { createNote, getDashboardList } from "../api/noteAPI";
+import { createNote } from "../api/noteAPI";
 import NotePaper from "../component/notePaper";
 import Logout from "../component/logout";
+import { createNotebook } from "../api/notebookAPI";
+import { getDashboardList } from "../api/dashboardAPI";
+import NotebookCover from "../component/notebookCover";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
     const [notes, setNotes] = useState(null as unknown as Array<{ _id: string, content: string }>)
+    const [notebooks, setNotebookss] = useState(null as unknown as Array<{
+        _id: string,
+        userId: string,
+        currentLeft: string,
+        currentRight: string,
+        title: string,
+        content: Array<string>,
+    }>)
 
     useEffect(() => {
         checkSessionValidity()
@@ -16,6 +27,7 @@ export default function DashboardLanding() {
                 getDashboardList()
                     .then(res => {
                         setNotes(res.data.notes)
+                        setNotebookss(res.data.notebooks)
                     })
             })
             .catch(error => {
@@ -28,6 +40,14 @@ export default function DashboardLanding() {
             .then(data => {
                 if (data.status === "success")
                     navigate("/note", { state: { id: data.data.insertedId } })
+            })
+    }
+
+    function createNotebookOnClick() {
+        createNotebook()
+            .then(data => {
+                if (data.status === "success")
+                    navigate("/notebook", { state: { id: data.data.insertedId } })
             })
     }
 
@@ -50,12 +70,16 @@ export default function DashboardLanding() {
                 <hr className="hr-line w-dvw ml-5 mr-1 overflow-y-auto" />
             </div>
             <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
-
+                {notebooks && notebooks.map((item) => {
+                    return (
+                        <NotebookCover notebook={item} key={item._id} />
+                    )
+                })}
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col fixed bottom-[5rem] right-[5rem]">
                 <button type="button" className="btn-submit" onClick={createNoteOnClick}>Create new note</button>
-                <a className="btn-submit" href="/notebook/new">Create new notebook</a>
+                <button type="button" className="btn-submit" onClick={createNotebookOnClick}>Create new notebook</button>
             </div>
 
         </div>

@@ -2,6 +2,7 @@ const express = require('express');
 const { connectMongodb, closeDB } = require('./components/db');
 const { regitserAccount, login, checkSessionValidity, logout } = require('./components/account')
 const { createNote, saveNote, getNote } = require('./components/note')
+const { createNotebook, getNotebook, saveNotebook } = require('./components/notebook')
 const { getDashboardList } = require('./components/dashboard')
 
 const cors = require("cors");
@@ -30,6 +31,12 @@ app.post('/notes/create', createNote)
 app.post('/notes/save', saveNote)
 
 app.get('/notes/:id', getNote)
+
+app.post('/notebooks/create', createNotebook)
+
+app.post('/notebooks/save', saveNotebook)
+
+app.get('/notebooks/:id', getNotebook)
 
 app.get('/dashboard/', getDashboardList)
 

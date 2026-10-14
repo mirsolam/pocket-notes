@@ -24,7 +24,7 @@ export default function ForgotPasswordLanding() {
                 <div className="flex flex-col justify-center items-center text-center">
                     <div className="font-bold title mb-10">Forgot your password?</div>
                     <div className="flex flex-col text-start">
-                        <GeneralInput displayName="Enter your email" id="email-forgotPassword" type="email" />
+                        <GeneralInput displayName="Enter your email" id="email-forgotPassword" type="email" required />
                     </div>
                     <div className="my-10">
                         <button className="btn-submit h-[3rem] w-[10rem]" type="button" onClick={onEmailSubmit}>Submit</button>

@@ -1,0 +1,59 @@
+const { getDB } = require('./db');
+const { checkAndUpdateSession } = require('./account')
+const { ObjectId } = require('mongodb');
+const { title } = require('process');
+
+async function createNotebook(req, res) {
+    try {
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
+        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        const note = await getDB()
+            .collection('notebooks')
+            .insertOne({ userId: req.cookies.userId, title: "", currentLeft: 0, currentRight: 1, content: ["", ""] })
+        res.status(200).json({ status: "success", data: note, message: "Notebook created successfully." })
+    }
+    catch (error) {
+        res.status(500).json({ status: "failed", message: "Internal server error." })
+    }
+}
+
+async function saveNotebook(req, res) {
+    try {
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
+        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        const { id, title, currentLeft, currentRight, content } = req.body
+        const note = await getDB()
+            .collection('notebooks')
+            .findOneAndUpdate(
+                { _id: new ObjectId(id) },
+                { $set: { title: title, currentLeft: currentLeft, currentRight: currentRight, content: content } },
+                { returnDocument: "after" }
+            )
+        res.status(200).json({ status: "success", data: note, message: "Notebook saved successfully." })
+    }
+    catch (error) {
+        console.log(error)
+        res.status(500).json({ status: "failed", message: "Internal server error." })
+    }
+}
+
+async function getNotebook(req, res) {
+    try {
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
+        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        const id = req.params.id
+        const note = await getDB()
+            .collection('notebooks')
+            .findOne(
+                { _id: new ObjectId(id) },
+                { returnDocument: "after" }
+            )
+        res.status(200).json({ status: "success", data: note, message: "Notebook retrieved successfully." })
+    }
+    catch (error) {
+        console.log(error)
+        res.status(500).json({ status: "failed", message: "Internal server error." })
+    }
+}
+
+module.exports = { createNotebook, saveNotebook, getNotebook };

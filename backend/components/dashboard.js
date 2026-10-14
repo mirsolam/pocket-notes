@@ -9,11 +9,11 @@ async function getDashboardList(req, res) {
             .collection('notes')
             .find({ userId: req.cookies.userId })
             .toArray()
-        // const notebooks = await getDB()
-        //     .collection('notebooks')
-        //     .find({})
-        //     .toArray()
-        res.status(200).json({ status: "success", data: { notes: notes }, message: "Dashboard retrieved successfully." })
+        const notebooks = await getDB()
+            .collection('notebooks')
+            .find({ userId: req.cookies.userId })
+            .toArray()
+        res.status(200).json({ status: "success", data: { notes: notes, notebooks: notebooks }, message: "Dashboard retrieved successfully." })
     }
     catch (error) {
         res.status(500).json({ status: "failed", message: "Internal server error." })
