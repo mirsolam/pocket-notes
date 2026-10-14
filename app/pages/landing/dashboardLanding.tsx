@@ -78,8 +78,8 @@ export default function DashboardLanding() {
             </div>
 
             <div className="flex flex-col fixed bottom-[5rem] right-[5rem]">
-                <button type="button" className="btn-submit" onClick={createNoteOnClick}>Create new note</button>
-                <button type="button" className="btn-submit" onClick={createNotebookOnClick}>Create new notebook</button>
+                <div className="note-icon cursor-pointer" onClick={createNoteOnClick}>Create new note</div>
+                <div className="notebook-icon cursor-pointer" onClick={createNotebookOnClick}>Create new notebook</div>
             </div>
 
         </div>
