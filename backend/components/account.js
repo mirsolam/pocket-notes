@@ -9,9 +9,9 @@ const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000
 }
 
-function setCookies(res) {
+function setCookies(res, sessionId, userId) {
     res.cookie("sessionId", sessionId, cookieOptions);
-    res.cookie("userId", user._id, cookieOptions);
+    res.cookie("userId", userId, cookieOptions);
 }
 
 function removeCookies(res) {
@@ -97,12 +97,13 @@ async function login(req, res) {
             });
 
         if (match) {
-            setCookies(res)
+            setCookies(res, sessionId, user._id)
             res.json({ status: "success", message: "Valid credentials." })
         }
         else res.status(401).json({ status: "fail", message: "Invalid credentials." })
     }
     catch (error) {
+        console.error("Login: ", error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }

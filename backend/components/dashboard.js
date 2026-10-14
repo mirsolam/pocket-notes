@@ -7,7 +7,7 @@ async function getDashboardList(req, res) {
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
         const notes = await getDB()
             .collection('notes')
-            .find({})
+            .find({ userId: req.cookies.userId })
             .toArray()
         // const notebooks = await getDB()
         //     .collection('notebooks')

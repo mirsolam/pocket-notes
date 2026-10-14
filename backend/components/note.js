@@ -8,7 +8,7 @@ async function createNote(req, res) {
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
         const note = await getDB()
             .collection('notes')
-            .insertOne({ content: "" })
+            .insertOne({ userId: req.cookies.userId, content: "" })
         res.status(200).json({ status: "success", data: note, message: "Note created successfully." })
     }
     catch (error) {
