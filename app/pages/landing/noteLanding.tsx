@@ -12,7 +12,6 @@ export default function NoteLanding() {
             checkSessionValidity()
                 .then(data => {
                     if (data.status !== "success") navigate("/login")
-
                     if (location.state._id)
                         getNote(location.state._id)
                             .then(res => {

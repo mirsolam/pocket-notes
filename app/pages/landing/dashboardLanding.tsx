@@ -13,21 +13,33 @@ export default function DashboardLanding() {
     const navigate = useNavigate();
     const [notes, setNotes] = useState(null as unknown as Array<Note>)
     const [notebooks, setNotebookss] = useState(null as unknown as Array<Notebook>)
+    const [rerenderFlag, setRerenderFlag] = useState(false)
 
     useEffect(() => {
         checkSessionValidity()
             .then(data => {
                 if (data.status !== "success") navigate("/login")
-                getDashboardList()
-                    .then(res => {
-                        setNotes(res.data.notes)
-                        setNotebookss(res.data.notebooks)
-                    })
+                loadDashboard()
             })
             .catch(error => {
                 navigate("/login")
             })
     }, [])
+
+    useEffect(() => {
+        if (rerenderFlag) {
+            loadDashboard()
+            setRerenderFlag(false)
+        }
+    }, [rerenderFlag])
+
+    function loadDashboard() {
+        getDashboardList()
+            .then(res => {
+                setNotes(res.data.notes)
+                setNotebookss(res.data.notebooks)
+            })
+    }
 
     function createNoteOnClick() {
         createNote()
@@ -55,7 +67,7 @@ export default function DashboardLanding() {
             <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
                 {notes && notes.map((item) => {
                     return (
-                        <NotePaper note={item} key={item._id} />
+                        <NotePaper note={item} key={item._id} triggerRerender={setRerenderFlag} />
                     )
                 })}
             </div>
@@ -66,7 +78,7 @@ export default function DashboardLanding() {
             <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
                 {notebooks && notebooks.map((item) => {
                     return (
-                        <NotebookCover notebook={item} key={item._id} />
+                        <NotebookCover notebook={item} key={item._id} triggerRerender={setRerenderFlag} />
                     )
                 })}
             </div>

@@ -34,3 +34,13 @@ export async function getNote(_id: string) {
 
     return res.json()
 }
+
+export async function deleteNote(_id: string) {
+    if (!_id) return { status: "failed", message: "Invalid values." }
+    const res = await fetch(`${API}/notes/${_id}`, {
+        method: 'DELETE',
+        credentials: "include",
+    })
+
+    return res.json()
+}

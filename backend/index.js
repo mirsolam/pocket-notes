@@ -1,8 +1,8 @@
 const express = require('express');
 const { connectMongodb, closeDB } = require('./components/db');
 const { regitserAccount, login, checkSessionValidity, logout } = require('./components/account')
-const { createNote, saveNote, getNote } = require('./components/note')
-const { createNotebook, getNotebook, saveNotebook } = require('./components/notebook')
+const { createNote, saveNote, getNote, deleteNote } = require('./components/note')
+const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('./components/notebook')
 const { getDashboardList } = require('./components/dashboard')
 
 const cors = require("cors");
@@ -18,6 +18,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+/*--Users--*/
 app.post('/users/login', login);
 
 app.post('/users/register', regitserAccount)
@@ -26,21 +27,26 @@ app.get('/users/checksession', checkSessionValidity)
 
 app.get('/users/logout', logout)
 
+/*--Notes--*/
 app.post('/notes/create', createNote)
 
 app.post('/notes/save', saveNote)
 
 app.get('/notes/:_id', getNote)
 
+app.delete('/notes/:_id', deleteNote)
+
+/*--Notebooks--*/
 app.post('/notebooks/create', createNotebook)
 
 app.post('/notebooks/save', saveNotebook)
 
 app.get('/notebooks/:_id', getNotebook)
 
+app.delete('/notebooks/:_id', deleteNotebook)
+
+/*--Dashboard--*/
 app.get('/dashboard/', getDashboardList)
-
-
 
 
 async function startServer() {

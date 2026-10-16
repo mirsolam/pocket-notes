@@ -56,4 +56,22 @@ async function getNotebook(req, res) {
     }
 }
 
-module.exports = { createNotebook, saveNotebook, getNotebook };
+async function deleteNotebook(req, res) {
+    try {
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
+        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        const _id = req.params._id
+        const note = await getDB()
+            .collection('notebooks')
+            .deleteOne(
+                { _id: new ObjectId(_id) },
+            )
+        res.status(200).json({ status: "success", message: "Notebook deleted successfully." })
+    }
+    catch (error) {
+        console.log(error)
+        res.status(500).json({ status: "failed", message: "Internal server error." })
+    }
+}
+
+module.exports = { createNotebook, saveNotebook, getNotebook, deleteNotebook };

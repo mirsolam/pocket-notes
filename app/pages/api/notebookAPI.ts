@@ -34,3 +34,13 @@ export async function getNotebook(id: string) {
 
     return res.json()
 }
+
+export async function deleteNotebook(_id: string) {
+    if (!_id) return { status: "failed", message: "Invalid values." }
+    const res = await fetch(`${API}/notebooks/${_id}`, {
+        method: 'DELETE',
+        credentials: "include",
+    })
+
+    return res.json()
+}

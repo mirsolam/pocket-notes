@@ -114,6 +114,14 @@ body{
   border-radius: 0.5rem;
 }
 
+.dashboard-delete-overlay{
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 2px transparent solid;
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
+  visibility: hidden;
+}
+
 .dashboard-notebook{
   padding: 1rem;
   position: relative;
@@ -122,9 +130,17 @@ body{
   border-radius: 0.5rem;
 }
 
+.dashboard-notebook:hover .dashboard-delete-overlay{
+  visibility: visible;
+}
+
+.dashboard-note:hover .dashboard-delete-overlay{
+  visibility: visible;
+}
+
 .dashboard-notebook-title{
   position: absolute;
-    background-color: var(--light-note-background-color);
+  background-color: var(--light-note-background-color);
   border: 2px transparent solid;
   border-radius: 0.5rem;
 }
