@@ -115,7 +115,7 @@ body{
 }
 
 .dashboard-delete-overlay{
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: color-mix(in srgb, var(--light-contrast-color) 80%, transparent);
   border: 2px transparent solid;
   border-bottom-left-radius: 0.3rem;
   border-bottom-right-radius: 0.3rem;
