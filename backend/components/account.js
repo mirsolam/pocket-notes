@@ -2,6 +2,23 @@ const bcrypt = require('bcrypt');
 const { getDB } = require('./db');
 const crypto = require("crypto");
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}
+
+function setCookies(res, sessionId, userId) {
+    res.cookie("sessionId", sessionId, cookieOptions);
+    res.cookie("userId", userId, cookieOptions);
+}
+
+function removeCookies(res) {
+    res.clearCookie("sessionId", cookieOptions);
+    res.clearCookie("userId", cookieOptions);
+}
+
 async function hashPassword(plainPassword) {
     const saltRounds = 10;
     return await bcrypt.hash(plainPassword, saltRounds);
@@ -10,6 +27,29 @@ async function hashPassword(plainPassword) {
 async function verifyPassword(plainPassword, storedHash) {
     const match = await bcrypt.compare(plainPassword, storedHash);
     return match;
+}
+
+async function checkAndUpdateSession(sessionId) {
+    try {
+        const session = await getDB()
+            .collection('sessions')
+            .findOne({ _id: sessionId })
+
+        if (!session) return false
+
+        await getDB()
+            .collection('sessions')
+            .updateOne(
+                { _id: sessionId },
+                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
+            )
+
+        return true
+    }
+    catch (error) {
+        return false
+    }
+
 }
 
 async function regitserAccount(req, res) {
@@ -57,44 +97,43 @@ async function login(req, res) {
             });
 
         if (match) {
-            res.cookie("sessionId", sessionId, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
+            setCookies(res, sessionId, user._id)
             res.json({ status: "success", message: "Valid credentials." })
         }
         else res.status(401).json({ status: "fail", message: "Invalid credentials." })
     }
     catch (error) {
+        console.error("Login: ", error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }
 
 async function checkSessionValidity(req, res) {
     try {
-        console.log(req.cookies)
-        const session = await getDB()
-            .collection('sessions')
-            .findOne({ _id: req.cookies.sessionId })
+        const valid = await checkAndUpdateSession(req.cookies.sessionId)
 
-        if (!session) return res.status(401).json({ status: "failed", message: "Session expired." })
-
-        await getDB()
-            .collection('sessions')
-            .updateOne(
-                { _id: req.cookies.sessionId },
-                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
-            )
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
 
         return res.json({ status: "success", message: "Session is valid." })
     }
     catch (error) {
-        console.log(error)
         return res.status(500).json({ status: "failed", message: "Internal error." })
-
     }
 }
 
-module.exports = { regitserAccount, login, checkSessionValidity };
+async function logout(req, res) {
+    try {
+        await getDB()
+            .collection('sessions')
+            .deleteOne({ _id: req.cookies.sessionId })
+
+        removeCookies(res)
+        return res.json({ status: "success", message: "Logout successfully." })
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(500).json({ status: "failed", message: "Internal error." })
+    }
+}
+
+module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession, logout };

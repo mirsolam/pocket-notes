@@ -1,3 +1,4 @@
+import type { GeneralInput } from "../types/types"
 
 export default function GeneralInput(
     {
@@ -6,20 +7,14 @@ export default function GeneralInput(
         type,
         required,
     }
-        :
-        {
-            displayName: string;
-            id: string;
-            type: "text" | "email";
-            required: boolean
-        }
+        : GeneralInput
 ) {
 
     function onBlur(e: React.FocusEvent<HTMLInputElement>) {
         const element = e.currentTarget as HTMLInputElement
         const error = document.getElementById(`${element.id}-error`) as HTMLSpanElement
 
-        if (element.value.trim() === '') {
+        if (element.value.trim() === '' && required) {
             element.ariaInvalid = "true"
             error!.textContent = `Please enter a valid ${displayName.toLowerCase()}.`
         }

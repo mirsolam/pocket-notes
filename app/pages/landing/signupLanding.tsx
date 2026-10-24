@@ -13,7 +13,7 @@ export default function SignUpLanding() {
         const confirmPassword = document.getElementById("confirmPassword-signup") as HTMLInputElement
         const passwordMatchError = document.getElementById("passwordMatch-signup-error") as HTMLSpanElement
 
-        if (password.value !== confirmPassword.value) passwordMatchError.textContent = "Passwords do not match."
+        if (password.value !== confirmPassword.value) { passwordMatchError.textContent = "Passwords do not match."; return }
         else passwordMatchError.textContent = ""
 
         const res = registerAccount({ name: name.value, email: email.value, password: password.value })

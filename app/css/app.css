@@ -11,7 +11,9 @@
   --light-input-border-color: #D4A373;
   --light-note-background-color: #E9EDC9;
   --light-note-border-color: #CCD5AE;
-  --off-white-color: #FEFAE0
+  --off-white-color: #FEFAE0;
+
+  --breakpoint-xs: 0rem;
 }
 
 /* html,
@@ -45,6 +47,7 @@ body{
   color: black;
   border: 2px solid var(--light-contrast-color);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .btn-cancel{
@@ -52,6 +55,7 @@ body{
   color: black;
   border: 2px solid var(--light-input-border-color);
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .note{
@@ -59,8 +63,11 @@ body{
   color: black;
   border: 0.4rem solid var(--light-note-border-color);
   border-radius: 0.5rem;
-
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
   z-index: 1;
+  line-height: 1.5;
 }
 
 .text-toolbar{
@@ -74,7 +81,6 @@ body{
   z-index: 0;
 }
 
-
 .note.right{
   transform-origin: right center;
   transform: rotateY(0deg);
@@ -85,7 +91,7 @@ body{
   background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
   transform-style: preserve-3d;
   transform-origin: right center;
-  transform: perspective(800px) rotateY(180deg);
+  transform: perspective(1000px) rotateY(180deg);
   transition: background-color 1s ease, transform 1s ease;
 }
 
@@ -98,8 +104,89 @@ body{
   background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
   transform-style: preserve-3d;
   transform-origin: left center;
-  transform: perspective(800px) rotateY(-179deg);
+  transform: perspective(1000px) rotateY(-179deg);
   transition: background-color 1s ease, transform 1s ease;
 }
 
+.note.no-flip{
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: perspective(1000px) rotateY(0deg);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.note.notebook-a4{
+    width: 130mm;
+    height: 184mm;
+    max-width: 130mm;
+    max-height: 184mm;
+    box-sizing: border-box;
+}
+
+.hr-line{
+  border: 1px var(--light-contrast-color) solid;
+}
+
+.dashboard-note{
+  background-color: var(--light-note-border-color);
+  border: 2px var(--light-contrast-color) solid;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.dashboard-item-scroll{
+  padding: 1rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
+  height: 100%;
+}
+
+.dashboard-delete-overlay{
+  background-color: color-mix(in srgb, var(--light-contrast-color) 80%, transparent);
+  border: 2px transparent solid;
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
+  visibility: hidden;
+}
+
+.dashboard-notebook{
+  padding: 1rem;
+  position: relative;
+  background-color: var(--light-note-border-color);
+  border: 2px var(--light-contrast-color) solid;
+  border-radius: 0.5rem;
+}
+
+.dashboard-notebook:hover .dashboard-delete-overlay{
+  visibility: visible;
+}
+
+.dashboard-note:hover .dashboard-delete-overlay{
+  visibility: visible;
+}
+
+
+.dashboard-notebook-title{
+  position: absolute;
+  background-color: var(--light-note-background-color);
+  border: 2px transparent solid;
+  border-radius: 0.5rem;
+}
+
+.dashboard-list-scroll{
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
+}
+
+.logout{
+  cursor: pointer;
+}
+
+.div-disabled{
+      pointer-events: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
