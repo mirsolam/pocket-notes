@@ -14,9 +14,9 @@ export default function PasswordInput({
 
     function onBlur(e: React.FocusEvent<HTMLInputElement>) {
         const element = e.currentTarget as HTMLInputElement
-        const error = document.getElementById(`${element.id}-error`) as HTMLSpanElement
 
-        if (element.value.trim() === '' || element.value.length < 6) {
+        const error = document.getElementById(`${element.id}-error`) as HTMLSpanElement
+        if (element.value === '' || element.value.length < 6) {
             element.ariaInvalid = "true"
             error!.textContent = "Please enter a valid password."
         }
