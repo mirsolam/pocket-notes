@@ -29,6 +29,14 @@ async function verifyPassword(plainPassword, storedHash) {
     return match;
 }
 
+async function findUser(email) {
+    const user = await getDB()
+        .collection('users')
+        .findOne({ email: email })
+    return user
+
+}
+
 async function checkAndUpdateSession(sessionId) {
     try {
         const session = await getDB()
@@ -65,9 +73,9 @@ async function regitserAccount(req, res) {
             const users = await getDB()
                 .collection('users')
                 .insertOne({ name: name, email: email, password: hashedPassword })
-            return res.status(200).json({ status: "success", message: "Registartion successful!" })
+            return res.json({ status: "success", message: "Registartion successful!" })
         }
-
+        return res.status(200).json({ status: "fail", message: "Registartion failed!" })
     }
     catch (error) {
         console.log('error in query: ', error)
@@ -79,12 +87,11 @@ async function login(req, res) {
     try {
         const { email, password } = req.body
         const sessionId = crypto.randomBytes(32).toString("hex");
-
-        const user = await getDB()
-            .collection('users')
-            .findOne({ email: email })
+        const user = await findUser(email)
 
         if (!user) return res.status(401).json({ status: "fail", error: "Invalid credentials" });
+
+        console.log("USER: ", user)
 
         const match = verifyPassword(password, user.password)
 
@@ -136,4 +143,49 @@ async function logout(req, res) {
     }
 }
 
-module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession, logout };
+async function isEmailValid(req, res) {
+    try {
+        const email = req.params.email
+
+        if (!await findUser(email)) return res.status(401).json({ status: "fail", error: "Invalid email." });
+        return res.json({ status: "success", message: "Valid email." });
+    }
+    catch (error) {
+        console.error("Login: ", error)
+        res.status(500).json({ error: 'Internal server error.' })
+    }
+}
+
+async function forgotPassword(req, res) {
+    try {
+        const { email, password } = req.body
+
+        let hashedPassword = ""
+        await hashPassword(password)
+            .then(data => {
+                hashedPassword = data
+            })
+
+        if (hashedPassword !== "") {
+            const users = await getDB()
+                .collection('users')
+                .findOneAndUpdate(
+                    { email: email },
+                    { $set: { password: hashedPassword } },
+                    {
+                        projection: { userId: 0 },
+                        returnDocument: "after"
+                    }
+                )
+            return res.status(200).json({ status: "success", message: "Password change successful!" })
+        }
+
+        return res.status(200).json({ status: "fail", message: "Password change failed!" })
+    }
+    catch (error) {
+        console.error("Login: ", error)
+        res.status(500).json({ error: 'Internal server error.' })
+    }
+}
+
+module.exports = { regitserAccount, login, checkSessionValidity, checkAndUpdateSession, logout, isEmailValid, forgotPassword };
