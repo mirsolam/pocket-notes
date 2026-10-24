@@ -91,8 +91,6 @@ async function login(req, res) {
 
         if (!user) return res.status(401).json({ status: "fail", error: "Invalid credentials" });
 
-        console.log("USER: ", user)
-
         const match = verifyPassword(password, user.password)
 
         await getDB()

@@ -2,6 +2,7 @@ const { getDB } = require('./db');
 const { checkAndUpdateSession } = require('./account')
 const { ObjectId } = require('mongodb');
 const { title } = require('process');
+const { encryptContent, decryptContent } = require('./note');
 
 async function createNotebook(req, res) {
     try {
@@ -22,6 +23,9 @@ async function saveNotebook(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, title, currentLeft, currentRight, content } = req.body
+        content.map((item, index) => {
+            if (content[index].length > 0) content[index] = encryptContent(content[index])
+        })
         const note = await getDB()
             .collection('notebooks')
             .findOneAndUpdate(
@@ -52,6 +56,9 @@ async function getNotebook(req, res) {
                 { returnDocument: "after" },
                 { projection: { userId: 0 } }
             )
+        note.content.map((item, index) => {
+            if (note.content[index].length > 0) note.content[index] = decryptContent(note.content[index])
+        })
         res.status(200).json({ status: "success", data: note, message: "Notebook retrieved successfully." })
     }
     catch (error) {
