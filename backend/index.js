@@ -1,6 +1,6 @@
 const express = require('express');
 const { connectMongodb, closeDB } = require('./components/db');
-const { regitserAccount, login, checkSessionValidity, logout } = require('./components/account')
+const { regitserAccount, login, checkSessionValidity, logout, isEmailValid, forgotPassword } = require('./components/account')
 const { createNote, saveNote, getNote, deleteNote } = require('./components/note')
 const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('./components/notebook')
 const { getDashboardList } = require('./components/dashboard')
@@ -26,6 +26,10 @@ app.post('/users/register', regitserAccount)
 app.get('/users/checksession', checkSessionValidity)
 
 app.get('/users/logout', logout)
+
+app.get('/users/isemailvalid/:email', isEmailValid)
+
+app.post('/users/forgotpassword', forgotPassword)
 
 /*--Notes--*/
 app.post('/notes/create', createNote)
