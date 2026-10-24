@@ -209,7 +209,7 @@ export default function NotebookLanding() {
     }
 
     return (
-        <div className="flex flex-col h-dvh md:justify-center-safe xs:justify-center items-center py-5 md:scale-100 xs:scale-50" onKeyDownCapture={onKeyDownCapture}>
+        <div className="flex flex-col h-dvh md:justify-center-safe xs:justify-center items-center py-5 xl:scale-100 lg:scale-95 md:scale-100 xs:scale-50" onKeyDownCapture={onKeyDownCapture}>
             <GeneralInput displayName="Title" id="notebook-title" required={false} type="text" />
             <div className="flex lg:flex-row xs:flex-col notebook-a4 justify-center items-center my-5" id="notebook-parent">
                 <div className="flex h-full w-full justify-end items-center relative">
