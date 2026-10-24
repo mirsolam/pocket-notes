@@ -11,7 +11,9 @@
   --light-input-border-color: #D4A373;
   --light-note-background-color: #E9EDC9;
   --light-note-border-color: #CCD5AE;
-  --off-white-color: #FEFAE0
+  --off-white-color: #FEFAE0;
+
+  --breakpoint-xs: 0rem;
 }
 
 /* html,
@@ -104,6 +106,13 @@ body{
   transform-origin: left center;
   transform: perspective(1000px) rotateY(-179deg);
   transition: background-color 1s ease, transform 1s ease;
+}
+
+.note.no-flip{
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: perspective(1000px) rotateY(0deg);
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .note.notebook-a4{

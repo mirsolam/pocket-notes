@@ -40,6 +40,11 @@ export default function NotebookLanding() {
             })
     }, [])
 
+    function lgBreakpointCheck() {
+        const LGBREAKPOINT = 1024
+        return window.innerWidth >= LGBREAKPOINT
+    }
+
     function flipPage(e: React.MouseEvent<HTMLDivElement>, otherChevron: string) {
         const chevron: HTMLDivElement = e.target as HTMLDivElement
         const flipDirection = chevron.id
@@ -59,7 +64,10 @@ export default function NotebookLanding() {
             pageContentOrderRef.current.push("")
 
             rightSidePage.contentEditable = "false"
-            !rightSidePage.className.includes("flip-left") ? rightSidePage.classList.add("flip-left") : ""
+            if (lgBreakpointCheck())
+                !rightSidePage.className.includes("flip-left") ? rightSidePage.classList.add("flip-left") : ""
+            else if (!lgBreakpointCheck())
+                !rightSidePage.className.includes("no-flip") ? rightSidePage.classList.add("no-flip") : ""
         }
         else if (flipDirection === "flip-right") {
             if (pageNumberOrderRef.current.currentLeft === 0) {
@@ -71,7 +79,10 @@ export default function NotebookLanding() {
             pageNumberOrderRef.current.currentLeft -= 2
 
             leftSide.contentEditable = "false"
-            !leftSide.className.includes("flip-right") ? leftSide.classList.add("flip-right") : ""
+            if (lgBreakpointCheck())
+                !leftSide.className.includes("flip-right") ? leftSide.classList.add("flip-right") : ""
+            else if (!lgBreakpointCheck())
+                !leftSide.className.includes("no-flip") ? leftSide.classList.add("no-flip") : ""
         }
 
         rightSidePage.textContent = ""
@@ -198,22 +209,23 @@ export default function NotebookLanding() {
     }
 
     return (
-        <div className="flex flex-col h-dvh justify-center items-center py-5" onKeyDownCapture={onKeyDownCapture}>
+        <div className="flex flex-col h-dvh md:justify-center-safe xs:justify-center items-center py-5 md:scale-100 xs:scale-50" onKeyDownCapture={onKeyDownCapture}>
             <GeneralInput displayName="Title" id="notebook-title" required={false} type="text" />
-            <div className="flex notebook-a4 justify-center items-center my-5" id="notebook-parent">
+            <div className="flex lg:flex-row xs:flex-col notebook-a4 justify-center items-center my-5" id="notebook-parent">
                 <div className="flex h-full w-full justify-end items-center relative">
-                    <div className="chevronleft-icon size-7 cursor-pointer" id="flip-right" onClick={(e) => flipPage(e, "flip-left")} />
                     <div className="note notebook-a4 right p-3 overflow-y-auto" contentEditable="true" id="page-leftside" onTransitionEnd={() => replacePage("page-rightside")} onBeforeInput={limitInputLength} onPasteCapture={notebookOnPasteCapture} />
                     <div className="note notebook-a4 prop right p-3 absolute" />
                 </div>
                 <div className="flex h-full w-full justify-start items-center relative">
                     <div className="note notebook-a4 left p-3 overflow-y-auto" contentEditable="true" id="page-rightside" onTransitionEnd={() => replacePage("page-leftside")} onBeforeInput={limitInputLength} onPasteCapture={notebookOnPasteCapture} />
                     <div className="note notebook-a4 prop left overflow-hidden p-3 absolute" />
-                    <div className="chevronright-icon size-7 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
                 </div>
             </div>
-            {/* <Toolbar /> */}
-            <button type="button" className="btn-cancel text-center content-center h-10 w-40" onClick={backButtonOnClick}>Back</button>
+            <div className="flex justify-center items-center">
+                <div className="chevronleft-icon size-10 cursor-pointer" id="flip-right" onClick={(e) => flipPage(e, "flip-left")} />
+                <button type="button" className="btn-cancel text-center content-center h-10 w-40 mx-5" onClick={backButtonOnClick}>Back</button>
+                <div className="chevronright-icon size-10 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
+            </div>
         </div>
     )
 }
