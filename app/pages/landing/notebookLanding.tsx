@@ -3,13 +3,14 @@ import { useLocation, useNavigate } from "react-router";
 import { checkSessionValidity } from "../api/accountAPI";
 import { getNotebook, saveNotebook } from "../api/notebookAPI";
 import GeneralInput from "../component/generalInput";
+import Toolbar from "../component/toolbar";
 
 export default function NotebookLanding() {
     const navigate = useNavigate();
     const location = useLocation()
     const pageNumberOrderRef = useRef({ currentLeft: 0, currentRight: 1 })
     const pageContentOrderRef = useRef(["", ""])
-    const MAXCHARCOUNT = 1500
+    const MAXCHARCOUNT = 1447
 
     useEffect(() => {
         checkSessionValidity()
@@ -180,8 +181,24 @@ export default function NotebookLanding() {
         limitPageContent(element.id)
     }
 
+    function onKeyDownCapture(e: React.KeyboardEvent<HTMLDivElement>) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+            const id = location.state._id
+            const title = document.getElementById("notebook-title") as HTMLInputElement
+            e.preventDefault()
+            saveContent()
+            saveNotebook({
+                _id: id,
+                title: title.value,
+                currentLeft: pageNumberOrderRef.current.currentLeft,
+                currentRight: pageNumberOrderRef.current.currentRight,
+                content: pageContentOrderRef.current
+            })
+        }
+    }
+
     return (
-        <div className="flex flex-col h-dvh justify-center items-center py-5">
+        <div className="flex flex-col h-dvh justify-center items-center py-5" onKeyDownCapture={onKeyDownCapture}>
             <GeneralInput displayName="Title" id="notebook-title" required={false} type="text" />
             <div className="flex notebook-a4 justify-center items-center my-5" id="notebook-parent">
                 <div className="flex h-full w-full justify-end items-center relative">
@@ -195,14 +212,7 @@ export default function NotebookLanding() {
                     <div className="chevronright-icon size-7 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
                 </div>
             </div>
-            <div className="flex text-toolbar h-[3rem] mb-10">
-                <div className="checklist-icon" />
-                <div className="textcolor-icon" />
-                <div className="fontsize-icon" />
-                <div className="highlight-icon" />
-                <div className="bold-icon" />
-                <div className="italic-icon" />
-            </div>
+            {/* <Toolbar /> */}
             <button type="button" className="btn-cancel text-center content-center h-10 w-40" onClick={backButtonOnClick}>Back</button>
         </div>
     )
