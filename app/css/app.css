@@ -61,8 +61,11 @@ body{
   color: black;
   border: 0.4rem solid var(--light-note-border-color);
   border-radius: 0.5rem;
-
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
   z-index: 1;
+  line-height: 1.5;
 }
 
 .text-toolbar{
@@ -86,7 +89,7 @@ body{
   background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
   transform-style: preserve-3d;
   transform-origin: right center;
-  transform: perspective(800px) rotateY(180deg);
+  transform: perspective(1000px) rotateY(180deg);
   transition: background-color 1s ease, transform 1s ease;
 }
 
@@ -99,8 +102,23 @@ body{
   background: linear-gradient(to left, var(--light-note-background-color),  var(--light-note-border-color) , var(--light-note-background-color));
   transform-style: preserve-3d;
   transform-origin: left center;
-  transform: perspective(800px) rotateY(-179deg);
+  transform: perspective(1000px) rotateY(-179deg);
   transition: background-color 1s ease, transform 1s ease;
+}
+
+.notebook-text{
+  --lines: 4;
+  line-height: 1.4;
+  line-clamp: var(--lines);
+  overflow: hidden;
+}
+
+.note.notebook-a4{
+    width: 130mm;
+    height: 184mm;
+    max-width: 130mm;
+    max-height: 184mm;
+    box-sizing: border-box;
 }
 
 .hr-line{
@@ -108,10 +126,18 @@ body{
 }
 
 .dashboard-note{
-  padding: 1rem;
   background-color: var(--light-note-border-color);
   border: 2px var(--light-contrast-color) solid;
   border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.dashboard-item-scroll{
+  padding: 1rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
+  height: 100%;
 }
 
 .dashboard-delete-overlay{
@@ -143,6 +169,12 @@ body{
   background-color: var(--light-note-background-color);
   border: 2px transparent solid;
   border-radius: 0.5rem;
+}
+
+.dashboard-list-scroll{
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:var(--light-contrast-color) transparent;
 }
 
 .logout{

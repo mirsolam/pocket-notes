@@ -9,6 +9,7 @@ export default function NotebookLanding() {
     const location = useLocation()
     const pageNumberOrderRef = useRef({ currentLeft: 0, currentRight: 1 })
     const pageContentOrderRef = useRef(["", ""])
+    const MAXCHARCOUNT = 1500
 
     useEffect(() => {
         checkSessionValidity()
@@ -36,7 +37,7 @@ export default function NotebookLanding() {
             .catch(error => {
                 navigate("/login")
             })
-    })
+    }, [])
 
     function flipPage(e: React.MouseEvent<HTMLDivElement>, otherChevron: string) {
         const chevron: HTMLDivElement = e.target as HTMLDivElement
@@ -76,16 +77,17 @@ export default function NotebookLanding() {
         leftSide.textContent = ""
     }
 
-    function replacePage() {
+    function replacePage(sideToFocus: string) {
         const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
         const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
 
         leftSide.replaceWith(createNewPage("left"))
         rightSidePage.replaceWith(createNewPage("right"))
 
+        document.getElementById(sideToFocus)?.focus()
+
         document.getElementById("flip-left")?.classList.remove("div-disabled")
         document.getElementById("flip-right")?.classList.remove("div-disabled")
-
 
     }
 
@@ -95,27 +97,32 @@ export default function NotebookLanding() {
 
         if (side === "right") {
             newPage.id = "page-rightside"
-            newPage.className = "note left max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto"
+            newPage.className = "note notebook-a4 left p-3 overflow-y-auto"
             newPage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
-            newPage.addEventListener("transitionend", replacePage)
-
+            newPage.addEventListener("transitionend", () => replacePage("page-leftside"))
         }
         else if (side === "left") {
             newPage.id = "page-leftside"
-            newPage.className = "note right max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto"
+            newPage.className = "note notebook-a4 right p-3 overflow-y-auto"
             newPage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
-            newPage.addEventListener("transitionend", replacePage)
-
+            newPage.addEventListener("transitionend", () => replacePage("page-rightside"))
         }
-
         return newPage
     }
 
-    function saveContent() {
-        const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
-        const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
-        pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = leftSide.textContent
-        pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = rightSidePage.textContent
+    function saveContent(text?: string, side?: string) {
+        if (text && side) {
+            if (side === "page-leftside")
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = text
+            else if (side === "page-rightside")
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = text
+        }
+        else if (!text && !side) {
+            const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
+            const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
+            pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = leftSide.textContent
+            pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = rightSidePage.textContent
+        }
     }
 
     function backButtonOnClick() {
@@ -128,18 +135,63 @@ export default function NotebookLanding() {
             })
     }
 
+    function limitPageContent(side: string) {
+        let index = 0;
+
+        if (side === "page-leftside") index = pageNumberOrderRef.current.currentLeft
+        else if (side === "page-rightside") index = pageNumberOrderRef.current.currentRight
+
+        pageContentOrderRef.current.map((page) => {
+            if (pageContentOrderRef.current[index].length <= MAXCHARCOUNT) return
+
+            const excessText = pageContentOrderRef.current[index].slice(MAXCHARCOUNT)
+            pageContentOrderRef.current[index] = pageContentOrderRef.current[index].slice(0, MAXCHARCOUNT)
+            index += 1
+            pageContentOrderRef.current[index] = excessText + pageContentOrderRef.current[index]
+        })
+        const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
+        const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
+
+        leftSide.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
+        rightSidePage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
+    }
+
+    function limitInputLength(e: React.InputEvent<HTMLDivElement>) {
+        const element = e.target as HTMLDivElement
+
+        if (element.textContent.length === MAXCHARCOUNT) {
+            if (element.id === "page-leftside") {
+                const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
+                rightSidePage.focus()
+            }
+            else if (element.id === "page-rightside") {
+                const chevron = document.getElementById("flip-left") as HTMLDivElement
+                chevron.click()
+            }
+        }
+
+    }
+
+    function notebookOnPasteCapture(e: React.ClipboardEvent<HTMLDivElement>) {
+        e.preventDefault()
+        const element = e.target as HTMLDivElement
+        const pasteContent = e.clipboardData.getData("text/plain")
+        saveContent(pasteContent, element.id)
+        limitPageContent(element.id)
+    }
+
     return (
         <div className="flex flex-col h-dvh justify-center items-center py-5">
             <GeneralInput displayName="Title" id="notebook-title" required={false} type="text" />
-            <div className="flex h-full w-full justify-center items-center" id="notebook-parent">
+            <div className="flex notebook-a4 justify-center items-center my-5" id="notebook-parent">
                 <div className="flex h-full w-full justify-end items-center relative">
                     <div className="chevronleft-icon size-7 cursor-pointer" id="flip-right" onClick={(e) => flipPage(e, "flip-left")} />
-                    <div className="note right max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto" contentEditable="true" id="page-leftside" onTransitionEnd={replacePage} />
-                    <div className="note prop right max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto absolute" />
+                    <div className="note notebook-a4 right p-3 overflow-y-auto" contentEditable="true" id="page-leftside" onTransitionEnd={() => replacePage("page-rightside")} onBeforeInput={limitInputLength} onPasteCapture={notebookOnPasteCapture} />
+                    <div className="note notebook-a4 prop right p-3 absolute" />
                 </div>
                 <div className="flex h-full w-full justify-start items-center relative">
-                    <div className="note left max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto" contentEditable="true" id="page-rightside" onTransitionEnd={replacePage} />
-                    <div className="note prop left max-h-[80%] h-[80%] max-w-[50%] w-[50%] p-3 overflow-y-auto absolute" />
+                    <div className="note notebook-a4 left p-3 overflow-y-auto" contentEditable="true" id="page-rightside" onTransitionEnd={() => replacePage("page-leftside")} onBeforeInput={limitInputLength} onPasteCapture={notebookOnPasteCapture} />
+                    <div className="note notebook-a4 prop left overflow-hidden p-3 absolute" />
                     <div className="chevronright-icon size-7 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
                 </div>
             </div>

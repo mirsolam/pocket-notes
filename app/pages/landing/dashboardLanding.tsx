@@ -64,7 +64,7 @@ export default function DashboardLanding() {
                 <div>Notes</div>
                 <hr className="hr-line w-dvw ml-5 mr-1" />
             </div>
-            <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
+            <div className="flex flex-wrap p-5 dashboard-list-scroll max-h-[50%]">
                 {notes && notes.map((item) => {
                     return (
                         <NotePaper note={item} key={item._id} triggerRerender={setRerenderFlag} />
@@ -75,7 +75,7 @@ export default function DashboardLanding() {
                 <div>Notebooks</div>
                 <hr className="hr-line w-dvw ml-5 mr-1 overflow-y-auto" />
             </div>
-            <div className="flex flex-wrap p-5 overflow-y-auto max-h-[50%]">
+            <div className="flex flex-wrap p-5 dashboard-list-scroll max-h-[50%]">
                 {notebooks && notebooks.map((item) => {
                     return (
                         <NotebookCover notebook={item} key={item._id} triggerRerender={setRerenderFlag} />

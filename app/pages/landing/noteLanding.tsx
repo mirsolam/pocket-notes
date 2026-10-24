@@ -7,6 +7,8 @@ export default function NoteLanding() {
     const navigate = useNavigate()
     const location = useLocation()
 
+    console.log(location)
+
     useEffect(() => {
         try {
             checkSessionValidity()
