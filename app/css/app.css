@@ -157,6 +157,7 @@ body{
   visibility: visible;
 }
 
+
 .dashboard-notebook-title{
   position: absolute;
   background-color: var(--light-note-background-color);
