@@ -26,7 +26,10 @@ async function saveNote(req, res) {
             .findOneAndUpdate(
                 { _id: new ObjectId(_id) },
                 { $set: { content: content } },
-                { returnDocument: "after" }
+                {
+                    projection: { userId: 0 },
+                    returnDocument: "after"
+                }
             )
         res.status(200).json({ status: "success", data: note, message: "Note saved successfully." })
     }
@@ -45,7 +48,8 @@ async function getNote(req, res) {
             .collection('notes')
             .findOne(
                 { _id: new ObjectId(_id) },
-                { returnDocument: "after" }
+                { returnDocument: "after" },
+                { projection: { userId: 0 } }
             )
         res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })
     }

@@ -7,11 +7,11 @@ async function getDashboardList(req, res) {
         if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
         const notes = await getDB()
             .collection('notes')
-            .find({ userId: req.cookies.userId })
+            .find({ userId: req.cookies.userId }, { projection: { userId: 0 } })
             .toArray()
         const notebooks = await getDB()
             .collection('notebooks')
-            .find({ userId: req.cookies.userId })
+            .find({ userId: req.cookies.userId }, { uprojection: { userId: 0 } })
             .toArray()
         res.status(200).json({ status: "success", data: { notes: notes, notebooks: notebooks }, message: "Dashboard retrieved successfully." })
     }

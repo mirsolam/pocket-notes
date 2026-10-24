@@ -27,7 +27,10 @@ async function saveNotebook(req, res) {
             .findOneAndUpdate(
                 { _id: new ObjectId(_id) },
                 { $set: { title: title, currentLeft: currentLeft, currentRight: currentRight, content: content } },
-                { returnDocument: "after" }
+                {
+                    projection: { userId: 0 },
+                    returnDocument: "after"
+                }
             )
         res.status(200).json({ status: "success", data: note, message: "Notebook saved successfully." })
     }
@@ -46,7 +49,8 @@ async function getNotebook(req, res) {
             .collection('notebooks')
             .findOne(
                 { _id: new ObjectId(_id) },
-                { returnDocument: "after" }
+                { returnDocument: "after" },
+                { projection: { userId: 0 } }
             )
         res.status(200).json({ status: "success", data: note, message: "Notebook retrieved successfully." })
     }
