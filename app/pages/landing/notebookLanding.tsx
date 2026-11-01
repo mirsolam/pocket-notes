@@ -10,6 +10,7 @@ export default function NotebookLanding() {
     const location = useLocation()
     const pageNumberOrderRef = useRef({ currentLeft: 0, currentRight: 1 })
     const pageContentOrderRef = useRef(["", ""])
+    const MAXHEIGHT = 683
     const MAXCHARCOUNT = 1447
 
     useEffect(() => {
@@ -30,8 +31,8 @@ export default function NotebookLanding() {
                                 pageNumberOrderRef.current.currentRight = res.data.currentRight
 
                                 if (notebookTitle) notebookTitle.value = res.data.title ?? ""
-                                if (leftSidePage) leftSidePage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
-                                if (rightSidePage) rightSidePage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
+                                if (leftSidePage) leftSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
+                                if (rightSidePage) rightSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
                             }
                         })
             })
@@ -85,8 +86,8 @@ export default function NotebookLanding() {
                 !leftSide.className.includes("no-flip") ? leftSide.classList.add("no-flip") : ""
         }
 
-        rightSidePage.textContent = ""
-        leftSide.textContent = ""
+        rightSidePage.innerText = ""
+        leftSide.innerText = ""
     }
 
     function replacePage(sideToFocus: string) {
@@ -106,34 +107,48 @@ export default function NotebookLanding() {
     function createNewPage(side: "left" | "right"): HTMLDivElement {
         const newPage = document.createElement("div")
         newPage.contentEditable = "true"
+        newPage.addEventListener("beforeinput", (e) => {
+            const event = e as unknown as React.InputEvent<HTMLDivElement>
+            limitInputLength(event)
+        })
+        newPage.addEventListener("paste", (e) => {
+            const event = e as unknown as React.ClipboardEvent<HTMLDivElement>
+            notebookOnPasteCapture(event)
+        }, { capture: true })
 
         if (side === "right") {
             newPage.id = "page-rightside"
             newPage.className = "note notebook-a4 left p-3 overflow-y-auto"
-            newPage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
+            newPage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
             newPage.addEventListener("transitionend", () => replacePage("page-leftside"))
         }
         else if (side === "left") {
             newPage.id = "page-leftside"
             newPage.className = "note notebook-a4 right p-3 overflow-y-auto"
-            newPage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
+            newPage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
             newPage.addEventListener("transitionend", () => replacePage("page-rightside"))
         }
         return newPage
     }
 
-    function saveContent(text?: string, side?: string) {
-        if (text && side) {
-            if (side === "page-leftside")
-                pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = text
-            else if (side === "page-rightside")
-                pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = text
+    function saveContent(text?: string, side?: string, position?: number) {
+        if (text && side && (position || position === 0)) {
+            if (side === "page-leftside") {
+                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(0, position)
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(position)
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = beforeCaret + text + afterCaret
+            }
+            else if (side === "page-rightside") {
+                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(0, position) ?? ""
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(position)
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = beforeCaret + text + afterCaret
+            }
         }
-        else if (!text && !side) {
+        else if (!text && !side && !position) {
             const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
             const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
-            pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = leftSide.textContent
-            pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = rightSidePage.textContent
+            pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = leftSide.innerText
+            pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = rightSidePage.innerText
         }
     }
 
@@ -153,25 +168,42 @@ export default function NotebookLanding() {
         if (side === "page-leftside") index = pageNumberOrderRef.current.currentLeft
         else if (side === "page-rightside") index = pageNumberOrderRef.current.currentRight
 
-        pageContentOrderRef.current.map((page) => {
-            if (pageContentOrderRef.current[index].length <= MAXCHARCOUNT) return
+        const noteFormatter = document.getElementById("note-formatter")
 
-            const excessText = pageContentOrderRef.current[index].slice(MAXCHARCOUNT)
-            pageContentOrderRef.current[index] = pageContentOrderRef.current[index].slice(0, MAXCHARCOUNT)
-            index += 1
-            pageContentOrderRef.current[index] = excessText + pageContentOrderRef.current[index]
-        })
+        for (index; index < pageContentOrderRef.current.length; index += 1) {
+            if (pageContentOrderRef.current[index].trim().length < 1) break
+            noteFormatter!.innerText = pageContentOrderRef.current[index]
+
+            if (noteFormatter!.offsetHeight > MAXHEIGHT) {
+                const codePointText = Array.from(noteFormatter!.innerText)
+                let start = 0, end = codePointText.length
+
+                while (start < end) {
+                    const mid = Math.floor((start + end + 1) / 2);
+                    noteFormatter!.innerText = codePointText.slice(0, mid).join("");
+                    if (noteFormatter!.offsetHeight <= MAXHEIGHT) {
+                        start = mid;
+                    } else {
+                        end = mid - 1;
+                    }
+                }
+                pageContentOrderRef.current[index] = codePointText.slice(0, start).join("")
+                pageContentOrderRef.current[index + 1] = codePointText.slice(start).join("") + pageContentOrderRef.current[index + 1]
+            }
+        }
         const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
         const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
 
-        leftSide.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
-        rightSidePage.textContent = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
+        leftSide.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
+        rightSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
     }
 
     function limitInputLength(e: React.InputEvent<HTMLDivElement>) {
         const element = e.target as HTMLDivElement
+        const noteFormatter = document.getElementById("note-formatter")
+        noteFormatter!.innerText = element.innerText + e.data
 
-        if (element.textContent.length === MAXCHARCOUNT) {
+        if (noteFormatter!.scrollHeight > element.clientHeight) {
             if (element.id === "page-leftside") {
                 const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
                 rightSidePage.focus()
@@ -181,14 +213,14 @@ export default function NotebookLanding() {
                 chevron.click()
             }
         }
-
     }
 
     function notebookOnPasteCapture(e: React.ClipboardEvent<HTMLDivElement>) {
         e.preventDefault()
         const element = e.target as HTMLDivElement
         const pasteContent = e.clipboardData.getData("text/plain")
-        saveContent(pasteContent, element.id)
+        const position = getCaretPosition(element)
+        saveContent(pasteContent, element.id, position)
         limitPageContent(element.id)
     }
 
@@ -206,6 +238,20 @@ export default function NotebookLanding() {
                 content: pageContentOrderRef.current
             })
         }
+    }
+
+    function getCaretPosition(element: HTMLDivElement) {
+        const selection = window.getSelection();
+
+        if (!selection?.rangeCount) return 0;
+
+        const range = selection.getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+        return preCaretRange.toString().length;
     }
 
     return (
@@ -226,6 +272,8 @@ export default function NotebookLanding() {
                 <button type="button" className="btn-cancel text-center content-center h-10 w-40 mx-5" onClick={backButtonOnClick}>Back</button>
                 <div className="chevronright-icon size-10 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
             </div>
+            <div className="note notebook-a4 formatter right p-3" id="note-formatter" >Sup</div>
+
         </div>
     )
 }

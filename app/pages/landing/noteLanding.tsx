@@ -19,7 +19,7 @@ export default function NoteLanding() {
                                 const content = document.getElementById("notecontent") as HTMLDivElement
 
                                 if (res.status === "success" && content)
-                                    content.textContent = res.data.content
+                                    content.innerText = res.data.content
 
                             })
                 })
@@ -36,7 +36,7 @@ export default function NoteLanding() {
     function backButtonOnClick() {
         const id = location.state._id
         const content = document.getElementById("notecontent") as HTMLDivElement
-        saveNote({ _id: id, content: content.textContent })
+        saveNote({ _id: id, content: content.innerText })
             .then(res => {
                 navigate("/")
             })
@@ -47,7 +47,7 @@ export default function NoteLanding() {
             const id = location.state._id
             const content = document.getElementById("notecontent") as HTMLDivElement
             e.preventDefault()
-            saveNote({ _id: id, content: content.textContent })
+            saveNote({ _id: id, content: content.innerText })
         }
     }
 
