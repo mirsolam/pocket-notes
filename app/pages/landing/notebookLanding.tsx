@@ -131,14 +131,20 @@ export default function NotebookLanding() {
         return newPage
     }
 
-    function saveContent(text?: string, side?: string) {
-        if (text && side) {
-            if (side === "page-leftside")
-                pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = text
-            else if (side === "page-rightside")
-                pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = text
+    function saveContent(text?: string, side?: string, position?: number) {
+        if (text && side && (position || position === 0)) {
+            if (side === "page-leftside") {
+                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(0, position)
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(position)
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = beforeCaret + text + afterCaret
+            }
+            else if (side === "page-rightside") {
+                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(0, position) ?? ""
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(position)
+                pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = beforeCaret + text + afterCaret
+            }
         }
-        else if (!text && !side) {
+        else if (!text && !side && !position) {
             const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
             const rightSidePage: HTMLDivElement = document.getElementById("page-rightside")! as HTMLDivElement
             pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = leftSide.innerText
@@ -165,7 +171,7 @@ export default function NotebookLanding() {
         const noteFormatter = document.getElementById("note-formatter")
 
         for (index; index < pageContentOrderRef.current.length; index += 1) {
-            if (pageContentOrderRef.current[index].trim().length < 1) return
+            if (pageContentOrderRef.current[index].trim().length < 1) break
             noteFormatter!.innerText = pageContentOrderRef.current[index]
 
             if (noteFormatter!.offsetHeight > MAXHEIGHT) {
@@ -213,7 +219,8 @@ export default function NotebookLanding() {
         e.preventDefault()
         const element = e.target as HTMLDivElement
         const pasteContent = e.clipboardData.getData("text/plain")
-        saveContent(pasteContent, element.id)
+        const position = getCaretPosition(element)
+        saveContent(pasteContent, element.id, position)
         limitPageContent(element.id)
     }
 
@@ -231,6 +238,20 @@ export default function NotebookLanding() {
                 content: pageContentOrderRef.current
             })
         }
+    }
+
+    function getCaretPosition(element: HTMLDivElement) {
+        const selection = window.getSelection();
+
+        if (!selection?.rangeCount) return 0;
+
+        const range = selection.getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+        return preCaretRange.toString().length;
     }
 
     return (
