@@ -232,10 +232,10 @@ export default function NotebookLanding() {
     }
 
     function onKeyDownCapture(e: React.KeyboardEvent<HTMLDivElement>) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') || e.key.toLowerCase() === "enter") {
             const id = location.state._id
             const title = document.getElementById("notebook-title") as HTMLInputElement
-            e.preventDefault()
+            if (e.key.toLowerCase() !== "enter") e.preventDefault()
             saveContent()
             saveNotebook({
                 _id: id,
