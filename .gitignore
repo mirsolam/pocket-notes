@@ -12,6 +12,7 @@
 #Backend
 /backend/node_modules/
 /backend/data/
+/backend/mongodb-backup/
 /backend/data/*.db
 /backend/data/*.db-shm
 /backend/data/*.db-wal
