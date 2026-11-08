@@ -15,6 +15,7 @@ export default function DashboardLanding() {
     const [notes, setNotes] = useState(null as unknown as Array<Note>)
     const [notebooks, setNotebookss] = useState(null as unknown as Array<Notebook>)
     const [rerenderFlag, setRerenderFlag] = useState(false)
+    const [loading, isLoading] = useState(false)
 
     useEffect(() => {
         checkSessionValidity()
@@ -88,7 +89,7 @@ export default function DashboardLanding() {
                 <div className="note-icon cursor-pointer" onClick={createNoteOnClick}>Create new note</div>
                 <div className="notebook-icon cursor-pointer" onClick={createNotebookOnClick}>Create new notebook</div>
             </div>
-            <Loading />
+            {loading && <Loading />}
         </div>
     )
 }

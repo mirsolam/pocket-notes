@@ -8,3 +8,5 @@
 
 # typescript
 *.tsbuildinfo
+
+/backend/data
