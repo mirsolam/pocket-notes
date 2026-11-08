@@ -8,6 +8,7 @@ import { createNotebook } from "../api/notebookAPI";
 import { getDashboardList } from "../api/dashboardAPI";
 import NotebookCover from "../component/notebookCover";
 import type { Note, Notebook } from "../types/types";
+import Loading from "../component/loading";
 
 export default function DashboardLanding() {
     const navigate = useNavigate();
@@ -87,7 +88,7 @@ export default function DashboardLanding() {
                 <div className="note-icon cursor-pointer" onClick={createNoteOnClick}>Create new note</div>
                 <div className="notebook-icon cursor-pointer" onClick={createNotebookOnClick}>Create new notebook</div>
             </div>
-
+            <Loading />
         </div>
     )
 }

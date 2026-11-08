@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { getDB } = require('./db');
 const crypto = require("crypto");
+const { get_db } = require('../sqlite-database');
 
 const cookieOptions = {
     httpOnly: true,
@@ -30,16 +31,21 @@ async function verifyPassword(plainPassword, storedHash) {
 }
 
 async function findUser(email) {
-    const user = await getDB()
+    /*const user = await getDB()
         .collection('users')
-        .findOne({ email: email })
+        .findOne({ email: email })*/ //MongoDB
+
+    const conn = get_db()
+    const user = conn.prepare(`SELECT * FROM users WHERE email = ?`).get(email)
+    conn.close()
+
     return user
 
 }
 
 async function checkAndUpdateSession(sessionId) {
     try {
-        const session = await getDB()
+        /*const session = await getDB()
             .collection('sessions')
             .findOne({ _id: sessionId })
 
@@ -52,11 +58,44 @@ async function checkAndUpdateSession(sessionId) {
                 { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
             )
 
+        return true*/ //MongoDB
+
+        const conn = get_db()
+        const allSessions = conn.prepare(`SELECT _id, expiresAt FROM sessions`).all()
+
+        let currentSession = null;
+        let expiredSessions = [];
+        let placeholder = ""
+        allSessions.map(item => {
+            if (new Date(item.expiresAt).toISOString() < new Date(Date.now()).toISOString()) {
+                expiredSessions.push(item._id)
+                placeholder += "?, "
+            }
+            if (item._id === sessionId) currentSession = item
+        })
+
+        placeholder = placeholder.slice(0, placeholder.length - 2)
+
+        if (expiredSessions.length > 0)
+            conn.prepare(`DELETE FROM sessions where _id IN (${placeholder})`).run(...expiredSessions)
+
+        if (!currentSession || new Date(currentSession.expiresAt).toISOString() < new Date(Date.now()).toISOString()) {
+            conn.close()
+            return false
+        }
+
+        conn.prepare(`UPDATE sessions SET expiresAt = ? WHERE _id = ?`).run(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), sessionId)
+        conn.close()
+
         return true
+
     }
     catch (error) {
+        console.log("Error: ", error)
         return false
     }
+
+
 
 }
 
@@ -70,12 +109,19 @@ async function regitserAccount(req, res) {
             })
 
         if (hashedPassword !== "") {
-            const users = await getDB()
+            /*const users = await getDB()
                 .collection('users')
                 .insertOne({ name: name, email: email, password: hashedPassword })
+            return res.json({ status: "success", message: "Registartion successful!" })*/ //MongoDB
+
+            const conn = get_db()
+            conn.prepare(`INSERT INTO users (name, email, password) VALUES (?,?,?)`).run(name, email, hashedPassword)
+            conn.close()
+
             return res.json({ status: "success", message: "Registartion successful!" })
         }
-        return res.status(200).json({ status: "fail", message: "Registartion failed!" })
+
+        return res.status(400).json({ status: "fail", message: "Registartion failed!" })
     }
     catch (error) {
         console.log('error in query: ', error)
@@ -91,18 +137,23 @@ async function login(req, res) {
 
         if (!user) return res.status(401).json({ status: "fail", error: "Invalid credentials" });
 
-        const match = verifyPassword(password, user.password)
+        const match = await verifyPassword(password, user.password)
 
-        await getDB()
+        /*await getDB()
             .collection("sessions")
             .insertOne({
                 _id: sessionId,
                 userId: user._id,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-            });
+            });*/ //MongoDB
 
         if (match) {
+            const conn = get_db()
+            conn.prepare(`INSERT INTO sessions (_id, userId) VALUES(?,?)`).run(sessionId, user._id)
+            conn.close()
+
             setCookies(res, sessionId, user._id)
+
             res.json({ status: "success", message: "Valid credentials." })
         }
         else res.status(401).json({ status: "fail", message: "Invalid credentials." })
@@ -128,9 +179,13 @@ async function checkSessionValidity(req, res) {
 
 async function logout(req, res) {
     try {
-        await getDB()
+        /*await getDB()
             .collection('sessions')
-            .deleteOne({ _id: req.cookies.sessionId })
+            .deleteOne({ _id: req.cookies.sessionId })*/ //MongoDB
+
+        const conn = get_db()
+        conn.prepare(`DELETE FROM sessions WHERE _id = ?`).run(req.cookies.sessionId)
+        conn.close()
 
         removeCookies(res)
         return res.json({ status: "success", message: "Logout successfully." })
@@ -165,7 +220,7 @@ async function forgotPassword(req, res) {
             })
 
         if (hashedPassword !== "") {
-            const users = await getDB()
+            /*const users = await getDB()
                 .collection('users')
                 .findOneAndUpdate(
                     { email: email },
@@ -174,7 +229,12 @@ async function forgotPassword(req, res) {
                         projection: { userId: 0 },
                         returnDocument: "after"
                     }
-                )
+                )*/ //MongoDB
+
+            const conn = get_db()
+            conn.prepare(`UPDATE users SET password = ? WHERE email = ?`).run(hashedPassword, email)
+            conn.close()
+
             return res.status(200).json({ status: "success", message: "Password change successful!" })
         }
 

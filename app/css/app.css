@@ -201,3 +201,17 @@ body{
     cursor: not-allowed;
 }
 
+.loading{
+  display:flex; 
+  width: 100dvw ;
+ background-color: color-mix(in srgb, var(--light-note-border-color) 60%, transparent);
+}
+
+.spin{
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
