@@ -9,14 +9,13 @@ const { init_db } = require('./sqlite-database');
 const PORT = process.env.PORT;
 
 const app = express()
+let conn = null
 app.use(cors({
     origin: "http://localhost:3100",
     credentials: true
 }))
 app.use(cookieParser())
 app.use(express.json())
-
-init_db()
 
 /*--Users--*/
 app.post('/users/login', login)
@@ -54,7 +53,6 @@ app.get('/dashboard/', getDashboardList)
 
 
 async function startServer() {
-    let conn = null
     try {
         conn = init_db()
         app.listen(PORT, () => {
@@ -69,3 +67,6 @@ async function startServer() {
 }
 
 startServer();
+
+process.on('SIGINT', () => { if (conn) conn.close() });
+process.on('SIGTERM', () => { if (conn) conn.close() });
