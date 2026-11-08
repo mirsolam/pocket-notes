@@ -1,5 +1,4 @@
 const express = require('express');
-const { connectMongodb, closeDB } = require('./components/db');
 const { regitserAccount, login, checkSessionValidity, logout, isEmailValid, forgotPassword } = require('./components/account')
 const { createNote, saveNote, getNote, deleteNote } = require('./components/note')
 const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('./components/notebook')
@@ -55,15 +54,16 @@ app.get('/dashboard/', getDashboardList)
 
 
 async function startServer() {
+    let conn = null
     try {
-        await connectMongodb();
+        conn = init_db()
         app.listen(PORT, () => {
             console.log(`Express listening on local: http://localhost:${PORT}/`)
         });
     }
     catch (error) {
         console.log("Failed to start server")
-        await closeDB().catch(() => { })
+        if (conn) conn.close()
         process.exit(1)
     }
 }

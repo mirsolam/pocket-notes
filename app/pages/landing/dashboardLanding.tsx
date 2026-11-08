@@ -49,7 +49,7 @@ export default function DashboardLanding() {
         createNote()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/note", { state: { _id: data.data.insertedId } })
+                    navigate("/note", { state: { _id: data.data._id } })
             })
     }
 
@@ -57,7 +57,7 @@ export default function DashboardLanding() {
         createNotebook()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/notebook", { state: { _id: data.data.insertedId } })
+                    navigate("/notebook", { state: { _id: data.data._id } })
             })
     }
 

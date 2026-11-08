@@ -22,9 +22,11 @@ async function saveNotebook(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, title, currentLeft, currentRight, content } = req.body
+
         content.map((item, index) => {
-            if (content[index].length > 0) content[index] = encryptContent(content[index])
+            content[index] = encryptContent(content[index])
         })
+
         const conn = get_db()
         const notebook = conn.prepare(`UPDATE notebooks SET title = ?, currentLeft = ?, currentRight = ?, content = ? WHERE _id = ? RETURNING _id`).get(title, currentLeft, currentRight, JSON.stringify(content), _id)
         conn.close()
