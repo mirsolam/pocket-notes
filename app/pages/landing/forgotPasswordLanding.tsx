@@ -3,14 +3,18 @@ import GeneralInput from "../component/generalInput";
 import PasswordInput from "../component/passwordInput";
 import { forgotPassword, isEmailValid } from "../api/accountAPI";
 import { useNavigate } from "react-router";
+import Loading from "../component/loading";
 
 export default function ForgotPasswordLanding() {
     const [showChangePassword, setShowChangePassword] = useState(false)
     const navigate = useNavigate();
     const emailRef = useRef(null as unknown as string)
+    const [loading, setIsLoading] = useState(false)
+
 
     function onEmailSubmit() {
         const email = document.getElementById("email-forgotPassword") as HTMLInputElement
+        setIsLoading(true)
         isEmailValid(email.value.trim())
             .then(res => {
                 if (res.status === "success") {
@@ -21,6 +25,7 @@ export default function ForgotPasswordLanding() {
             .catch(error => {
                 console.log("Error")
             })
+            .finally(() => setIsLoading(false))
     }
 
     function toggleShowChangePassword() {
@@ -35,6 +40,8 @@ export default function ForgotPasswordLanding() {
         if (password.value !== confirmPassword.value) { passwordMatchError.textContent = "Passwords do not match."; return }
         else passwordMatchError.textContent = ""
 
+        setIsLoading(true)
+
         forgotPassword({ email: emailRef.current, password: password.value })
             .then(res => {
                 if (res.status === "success") navigate("/login")
@@ -42,6 +49,7 @@ export default function ForgotPasswordLanding() {
             .catch(error => {
                 console.log("Error")
             })
+            .finally(() => setIsLoading(false))
     }
 
     return (
@@ -76,6 +84,7 @@ export default function ForgotPasswordLanding() {
                     </div>
                 </div>
             }
+            {loading && <Loading />}
         </div>
     )
 }

@@ -2,9 +2,13 @@ import GeneralInput from "~/pages/component/generalInput";
 import PasswordInput from "~/pages/component/passwordInput";
 import { registerAccount } from "../api/accountAPI";
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import Loading from "../component/loading";
 
 export default function SignUpLanding() {
     const navigate = useNavigate();
+    const [loading, setIsLoading] = useState(false)
+
 
     function onRegisterClick() {
         const name = document.getElementById("name-signup") as HTMLInputElement
@@ -17,9 +21,11 @@ export default function SignUpLanding() {
         else passwordMatchError.textContent = ""
 
         const res = registerAccount({ name: name.value, email: email.value, password: password.value })
+        setIsLoading(true)
         res.then(data => {
             navigate("/login")
         })
+            .finally(() => setIsLoading(false))
 
     }
 
@@ -48,6 +54,7 @@ export default function SignUpLanding() {
                 </div>
                 <div>Already have an account? <a href="/login" className="text-blue-700 underline decoration-blue-700">Login</a></div>
             </div>
+            {loading && <Loading />}
         </div>
     )
 }

@@ -15,9 +15,10 @@ export default function DashboardLanding() {
     const [notes, setNotes] = useState(null as unknown as Array<Note>)
     const [notebooks, setNotebookss] = useState(null as unknown as Array<Notebook>)
     const [rerenderFlag, setRerenderFlag] = useState(false)
-    const [loading, isLoading] = useState(false)
+    const [loading, setIsLoading] = useState(false)
 
     useEffect(() => {
+        setIsLoading(true)
         checkSessionValidity()
             .then(data => {
                 if (data.status !== "success") navigate("/login")
@@ -41,6 +42,7 @@ export default function DashboardLanding() {
                 setNotes(res.data.notes)
                 setNotebookss(res.data.notebooks)
             })
+            .finally(() => setIsLoading(false))
     }
 
     function createNoteOnClick() {

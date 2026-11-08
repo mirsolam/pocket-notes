@@ -4,6 +4,7 @@ import { checkSessionValidity } from "../api/accountAPI";
 import { getNotebook, saveNotebook } from "../api/notebookAPI";
 import GeneralInput from "../component/generalInput";
 import Toolbar from "../component/toolbar";
+import Loading from "../component/loading";
 
 export default function NotebookLanding() {
     const navigate = useNavigate();
@@ -11,9 +12,11 @@ export default function NotebookLanding() {
     const pageNumberOrderRef = useRef({ currentLeft: 0, currentRight: 1 })
     const pageContentOrderRef = useRef(["", ""])
     const MAXHEIGHT = 683
-    const MAXCHARCOUNT = 1447
+    const [loading, setIsLoading] = useState(false)
+
 
     useEffect(() => {
+        setIsLoading(true)
         checkSessionValidity()
             .then(data => {
                 if (data.status !== "success") navigate("/login")
@@ -35,10 +38,12 @@ export default function NotebookLanding() {
                                 if (rightSidePage) rightSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
                             }
                         })
+                        .finally(() => setIsLoading(false))
             })
             .catch(error => {
                 navigate("/login")
             })
+            .finally(() => setIsLoading(false))
     }, [])
 
     function lgBreakpointCheck() {
@@ -156,10 +161,12 @@ export default function NotebookLanding() {
         const id = location.state._id
         const title = document.getElementById("notebook-title") as HTMLInputElement
         saveContent()
+        setIsLoading(true)
         saveNotebook({ _id: id, title: title.value, currentLeft: pageNumberOrderRef.current.currentLeft, currentRight: pageNumberOrderRef.current.currentRight, content: pageContentOrderRef.current })
             .then(res => {
                 navigate("/")
             })
+            .finally(() => setIsLoading(false))
     }
 
     function limitPageContent(side: string) {
@@ -273,7 +280,7 @@ export default function NotebookLanding() {
                 <div className="chevronright-icon size-10 cursor-pointer" id="flip-left" onClick={(e) => flipPage(e, "flip-right")} />
             </div>
             <div className="note notebook-a4 formatter right p-3" id="note-formatter" >Sup</div>
-
+            {loading && <Loading />}
         </div>
     )
 }

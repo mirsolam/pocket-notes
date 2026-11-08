@@ -12,8 +12,6 @@ export default function LoginLanding() {
             .then((data) => {
                 if (data.status === "success") navigate("/")
             })
-            .catch(() => {
-            })
     })
 
     function onLoginClick() {
