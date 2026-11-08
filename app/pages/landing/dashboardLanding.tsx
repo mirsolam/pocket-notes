@@ -46,19 +46,23 @@ export default function DashboardLanding() {
     }
 
     function createNoteOnClick() {
+        setIsLoading(true)
         createNote()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/note", { state: { _id: data.data.insertedId } })
+                    navigate("/note", { state: { _id: data.data._id } })
             })
+            .finally(() => setIsLoading(false))
     }
 
     function createNotebookOnClick() {
+        setIsLoading(true)
         createNotebook()
             .then(data => {
                 if (data.status === "success")
-                    navigate("/notebook", { state: { _id: data.data.insertedId } })
+                    navigate("/notebook", { state: { _id: data.data._id } })
             })
+            .finally(() => setIsLoading(false))
     }
 
     return (

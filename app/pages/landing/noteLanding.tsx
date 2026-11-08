@@ -52,10 +52,10 @@ export default function NoteLanding() {
     }
 
     function onKeyDownCapture(e: React.KeyboardEvent<HTMLDivElement>) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') || e.key.toLowerCase() === "enter") {
             const id = location.state._id
             const content = document.getElementById("notecontent") as HTMLDivElement
-            e.preventDefault()
+            if (e.key.toLowerCase() !== "enter") e.preventDefault()
             saveNote({ _id: id, content: content.innerText })
         }
     }

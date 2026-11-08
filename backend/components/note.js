@@ -1,6 +1,4 @@
-const { getDB } = require('./db');
-const { checkAndUpdateSession } = require('./account')
-const { ObjectId } = require('mongodb');
+const { checkAndUpdateSession } = require('./account');
 const crypto = require("crypto");
 const { get_db } = require('../sqlite-database');
 
@@ -47,9 +45,6 @@ async function createNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
-        /*const note = await getDB()
-            .collection('notes')
-            .insertOne({ userId: req.cookies.userId, content: "" })*/ //MongoDB
         const conn = get_db()
         const note = conn.prepare(`INSERT INTO notes (userId) VALUES (?) RETURNING _id, content`).get(req.cookies.userId)
         conn.close()
@@ -68,17 +63,6 @@ async function saveNote(req, res) {
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, content } = req.body
         const encryptedContent = encryptContent(content)
-        /*const note = await getDB()
-            .collection('notes')
-            .findOneAndUpdate(
-                { _id: new ObjectId(_id) },
-                { $set: { content: encryptedContent } },
-                {
-                    projection: { userId: 0 },
-                    returnDocument: "after"
-                }
-            )*/ //MongoDB
-
         const conn = get_db()
         const note = conn.prepare(`UPDATE notes SET content = ? WHERE _id = ? RETURNING _id, content`).get(encryptedContent, _id)
         conn.close()
@@ -97,13 +81,6 @@ async function getNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        /*const note = await getDB()
-            .collection('notes')
-            .findOne(
-                { _id: new ObjectId(_id) },
-                { returnDocument: "after" },
-                { projection: { userId: 0 } }
-            )*/
         const conn = get_db()
         const note = conn.prepare(`SELECT _id, content FROM notes WHERE _id = ?`).get(_id)
         conn.close()
@@ -121,11 +98,6 @@ async function deleteNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        /*const note = await getDB()
-            .collection('notes')
-            .deleteOne(
-                { _id: new ObjectId(_id) },
-            )*/ //MongoDB
         const conn = get_db()
         conn.prepare(`DELETE FROM notes WHERE _id = ?`).run(_id)
         conn.close()

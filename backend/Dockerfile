@@ -8,11 +8,13 @@ WORKDIR /app/backend
 # Install dependencies first for better layer caching
 COPY package*.json ./
 
-RUN npm install
+RUN mkdir -p /data
+
+RUN npm ci --omit=dev 
 
 # Copy the application
 COPY . .
 
-RUN mkdir -p /data
-
 EXPOSE 3500
+
+CMD ["node", "index.js"]

@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const { getDB } = require('./db');
 const crypto = require("crypto");
 const { get_db } = require('../sqlite-database');
 
@@ -31,10 +30,6 @@ async function verifyPassword(plainPassword, storedHash) {
 }
 
 async function findUser(email) {
-    /*const user = await getDB()
-        .collection('users')
-        .findOne({ email: email })*/ //MongoDB
-
     const conn = get_db()
     const user = conn.prepare(`SELECT * FROM users WHERE email = ?`).get(email)
     conn.close()
@@ -45,21 +40,6 @@ async function findUser(email) {
 
 async function checkAndUpdateSession(sessionId) {
     try {
-        /*const session = await getDB()
-            .collection('sessions')
-            .findOne({ _id: sessionId })
-
-        if (!session) return false
-
-        await getDB()
-            .collection('sessions')
-            .updateOne(
-                { _id: sessionId },
-                { $set: { expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
-            )
-
-        return true*/ //MongoDB
-
         const conn = get_db()
         const allSessions = conn.prepare(`SELECT _id, expiresAt FROM sessions`).all()
 
@@ -109,11 +89,6 @@ async function regitserAccount(req, res) {
             })
 
         if (hashedPassword !== "") {
-            /*const users = await getDB()
-                .collection('users')
-                .insertOne({ name: name, email: email, password: hashedPassword })
-            return res.json({ status: "success", message: "Registartion successful!" })*/ //MongoDB
-
             const conn = get_db()
             conn.prepare(`INSERT INTO users (name, email, password) VALUES (?,?,?)`).run(name, email, hashedPassword)
             conn.close()
@@ -138,14 +113,6 @@ async function login(req, res) {
         if (!user) return res.status(401).json({ status: "fail", error: "Invalid credentials" });
 
         const match = await verifyPassword(password, user.password)
-
-        /*await getDB()
-            .collection("sessions")
-            .insertOne({
-                _id: sessionId,
-                userId: user._id,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-            });*/ //MongoDB
 
         if (match) {
             const conn = get_db()
@@ -179,10 +146,6 @@ async function checkSessionValidity(req, res) {
 
 async function logout(req, res) {
     try {
-        /*await getDB()
-            .collection('sessions')
-            .deleteOne({ _id: req.cookies.sessionId })*/ //MongoDB
-
         const conn = get_db()
         conn.prepare(`DELETE FROM sessions WHERE _id = ?`).run(req.cookies.sessionId)
         conn.close()
@@ -220,17 +183,6 @@ async function forgotPassword(req, res) {
             })
 
         if (hashedPassword !== "") {
-            /*const users = await getDB()
-                .collection('users')
-                .findOneAndUpdate(
-                    { email: email },
-                    { $set: { password: hashedPassword } },
-                    {
-                        projection: { userId: 0 },
-                        returnDocument: "after"
-                    }
-                )*/ //MongoDB
-
             const conn = get_db()
             conn.prepare(`UPDATE users SET password = ? WHERE email = ?`).run(hashedPassword, email)
             conn.close()

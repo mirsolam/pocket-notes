@@ -139,13 +139,13 @@ export default function NotebookLanding() {
     function saveContent(text?: string, side?: string, position?: number) {
         if (text && side && (position || position === 0)) {
             if (side === "page-leftside") {
-                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(0, position)
-                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(position)
+                const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(0, position) ?? ""
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft].slice(position) ?? ""
                 pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft] = beforeCaret + text + afterCaret
             }
             else if (side === "page-rightside") {
                 const beforeCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(0, position) ?? ""
-                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(position)
+                const afterCaret = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight].slice(position) ?? ""
                 pageContentOrderRef.current[pageNumberOrderRef.current.currentRight] = beforeCaret + text + afterCaret
             }
         }
@@ -195,7 +195,7 @@ export default function NotebookLanding() {
                     }
                 }
                 pageContentOrderRef.current[index] = codePointText.slice(0, start).join("")
-                pageContentOrderRef.current[index + 1] = codePointText.slice(start).join("") + pageContentOrderRef.current[index + 1]
+                pageContentOrderRef.current[index + 1] = codePointText.slice(start).join("") + (pageContentOrderRef.current[index + 1] ?? "")
             }
         }
         const leftSide: HTMLDivElement = document.getElementById("page-leftside")! as HTMLDivElement
@@ -232,10 +232,10 @@ export default function NotebookLanding() {
     }
 
     function onKeyDownCapture(e: React.KeyboardEvent<HTMLDivElement>) {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') || e.key.toLowerCase() === "enter") {
             const id = location.state._id
             const title = document.getElementById("notebook-title") as HTMLInputElement
-            e.preventDefault()
+            if (e.key.toLowerCase() !== "enter") e.preventDefault()
             saveContent()
             saveNotebook({
                 _id: id,

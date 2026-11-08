@@ -1,5 +1,4 @@
 const express = require('express');
-const { connectMongodb, closeDB } = require('./components/db');
 const { regitserAccount, login, checkSessionValidity, logout, isEmailValid, forgotPassword } = require('./components/account')
 const { createNote, saveNote, getNote, deleteNote } = require('./components/note')
 const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('./components/notebook')
@@ -7,17 +6,16 @@ const { getDashboardList } = require('./components/dashboard')
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const { init_db } = require('./sqlite-database');
-const PORT = process.env.PORT;
+const PORT = process.env.API_PORT;
 
 const app = express()
+let conn = null
 app.use(cors({
     origin: "http://localhost:3100",
     credentials: true
 }))
 app.use(cookieParser())
 app.use(express.json())
-
-init_db()
 
 /*--Users--*/
 app.post('/users/login', login)
@@ -56,16 +54,27 @@ app.get('/dashboard/', getDashboardList)
 
 async function startServer() {
     try {
-        await connectMongodb();
+        conn = init_db()
         app.listen(PORT, () => {
             console.log(`Express listening on local: http://localhost:${PORT}/`)
         });
     }
     catch (error) {
         console.log("Failed to start server")
-        await closeDB().catch(() => { })
+        if (conn) conn.close()
         process.exit(1)
     }
 }
 
+function closeServer() {
+    console.log('Shutting down server...');
+    if (conn) conn.close()
+    console.log('SQLite connection closed');
+    process.exit(0);
+
+}
+
 startServer();
+
+process.on('SIGINT', closeServer);
+process.on('SIGTERM', closeServer);

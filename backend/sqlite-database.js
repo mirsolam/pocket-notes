@@ -30,7 +30,6 @@ function get_db() {
     const conn = new DatabaseSync(
         path.join(dbDirectory, 'app.db')
     );
-
     return conn
 }
 
@@ -77,6 +76,7 @@ function init_db() {
         FOREIGN KEY (userId) REFERENCES users(_id)
     )
         `)
+    conn.close()
 }
 
 module.exports = { init_db, get_db }
