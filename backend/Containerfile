@@ -13,5 +13,6 @@ RUN npm install
 # Copy the application
 COPY . .
 
+RUN mkdir -p /data
 
 EXPOSE 3500

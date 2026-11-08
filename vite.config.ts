@@ -7,7 +7,14 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
-  server:{
-    port: 3100
+  server: {
+    port: 3100,
+    watch: {
+      ignored: [
+        '**/*.db',
+        '**/*.db-shm',
+        '**/*.db-wal',
+      ]
+    }
   },
 });

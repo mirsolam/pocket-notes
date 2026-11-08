@@ -4,22 +4,23 @@ const { regitserAccount, login, checkSessionValidity, logout, isEmailValid, forg
 const { createNote, saveNote, getNote, deleteNote } = require('./components/note')
 const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('./components/notebook')
 const { getDashboardList } = require('./components/dashboard')
-
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
+const { init_db } = require('./sqlite-database');
 const PORT = process.env.PORT;
 
-
-const app = express();
+const app = express()
 app.use(cors({
     origin: "http://localhost:3100",
     credentials: true
-}));
-app.use(cookieParser());
-app.use(express.json());
+}))
+app.use(cookieParser())
+app.use(express.json())
+
+init_db()
 
 /*--Users--*/
-app.post('/users/login', login);
+app.post('/users/login', login)
 
 app.post('/users/register', regitserAccount)
 
@@ -62,7 +63,7 @@ async function startServer() {
     }
     catch (error) {
         console.log("Failed to start server")
-        await closeDB().catch(() => { });
+        await closeDB().catch(() => { })
         process.exit(1)
     }
 }

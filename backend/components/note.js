@@ -2,6 +2,7 @@ const { getDB } = require('./db');
 const { checkAndUpdateSession } = require('./account')
 const { ObjectId } = require('mongodb');
 const crypto = require("crypto");
+const { get_db } = require('../sqlite-database');
 
 
 function encryptContent(content) {
@@ -45,24 +46,29 @@ function decryptContent(payload) {
 async function createNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
-        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
-        const note = await getDB()
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
+        /*const note = await getDB()
             .collection('notes')
-            .insertOne({ userId: req.cookies.userId, content: "" })
-        res.status(200).json({ status: "success", data: note, message: "Note created successfully." })
+            .insertOne({ userId: req.cookies.userId, content: "" })*/ //MongoDB
+        const conn = get_db()
+        const note = conn.prepare(`INSERT INTO notes (userId) VALUES (?) RETURNING _id, content`).get(req.cookies.userId)
+        conn.close()
+        return res.status(200).json({ status: "success", data: note, message: "Note created successfully." })
     }
     catch (error) {
-        res.status(500).json({ status: "failed", message: "Internal server error." })
+        console.log("Error: ", error)
+        return res.status(500).json({ status: "failed", message: "Internal server error." })
     }
 }
 
 async function saveNote(req, res) {
     try {
+        console.log("Here")
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
-        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, content } = req.body
         const encryptedContent = encryptContent(content)
-        const note = await getDB()
+        /*const note = await getDB()
             .collection('notes')
             .findOneAndUpdate(
                 { _id: new ObjectId(_id) },
@@ -71,51 +77,64 @@ async function saveNote(req, res) {
                     projection: { userId: 0 },
                     returnDocument: "after"
                 }
-            )
-        res.status(200).json({ status: "success", data: note, message: "Note saved successfully." })
+            )*/ //MongoDB
+
+        const conn = get_db()
+        const note = conn.prepare(`UPDATE notes SET content = ? WHERE _id = ? RETURNING _id, content`).get(encryptedContent, _id)
+        conn.close()
+        note.content = decryptContent(note.content)
+
+        return res.status(200).json({ status: "success", data: note, message: "Note saved successfully." })
     }
     catch (error) {
         console.log(error)
-        res.status(500).json({ status: "failed", message: "Internal server error." })
+        return res.status(500).json({ status: "failed", message: "Internal server error." })
     }
 }
 
 async function getNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
-        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const note = await getDB()
+        /*const note = await getDB()
             .collection('notes')
             .findOne(
                 { _id: new ObjectId(_id) },
                 { returnDocument: "after" },
                 { projection: { userId: 0 } }
-            )
+            )*/
+        const conn = get_db()
+        const note = conn.prepare(`SELECT _id, content FROM notes WHERE _id = ?`).get(_id)
+        conn.close()
         if (note.content) note.content = decryptContent(note.content)
-        res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })
+        return res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })
     }
     catch (error) {
         console.log(error)
-        res.status(500).json({ status: "failed", message: "Internal server error." })
+        return res.status(500).json({ status: "failed", message: "Internal server error." })
     }
 }
 
 async function deleteNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
-        if (!valid) res.status(401).json({ status: "failed", message: "Session expired." })
+        if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const note = await getDB()
+        /*const note = await getDB()
             .collection('notes')
             .deleteOne(
                 { _id: new ObjectId(_id) },
-            )
-        res.status(200).json({ status: "success", message: "Note deleted successfully." })
+            )*/ //MongoDB
+        const conn = get_db()
+        conn.prepare(`DELETE FROM notes WHERE _id = ?`).run(_id)
+        conn.close()
+
+        return res.status(200).json({ status: "success", message: "Note deleted successfully." })
     }
     catch (error) {
         console.log(error)
-        res.status(500).json({ status: "failed", message: "Internal server error." })
+        return res.status(500).json({ status: "failed", message: "Internal server error." })
     }
 }
 

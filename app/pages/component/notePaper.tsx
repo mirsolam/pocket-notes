@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router";
 import type { Note } from "../types/types";
 import { deleteNote } from "../api/noteAPI";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Loading from "./loading";
 
 export default function NotePaper({ note, triggerRerender }: { note: Note; triggerRerender: React.Dispatch<React.SetStateAction<boolean>> }) {
     const navigate = useNavigate();
+    const [loading, setIsLoading] = useState(false)
+
 
     useEffect(() => {
         if (document.getElementById(`scroll-${note._id}`)) document.getElementById(`scroll-${note._id}`)!.innerText = note.content
@@ -18,10 +21,12 @@ export default function NotePaper({ note, triggerRerender }: { note: Note; trigg
     }
 
     function noteDeleteOnClick(e: React.MouseEvent<HTMLDivElement>) {
+        setIsLoading(true)
         deleteNote(note._id)
             .then(res => {
                 if (res.status === "success") triggerRerender(true)
             })
+            .finally(() => setIsLoading(false))
     }
 
     function toggleOverlay(e: React.TouchEvent<HTMLDivElement>) {
@@ -43,6 +48,7 @@ export default function NotePaper({ note, triggerRerender }: { note: Note; trigg
             <div className="flex justify-end items-center dashboard-delete-overlay absolute h-[3rem] w-full bottom-0 left-0" id={`overlay-${note._id}`}>
                 <div className="delete-icon w-7" id="delete-note" onClick={noteDeleteOnClick} />
             </div>
+            {loading && <Loading />}
         </div>
     )
 }

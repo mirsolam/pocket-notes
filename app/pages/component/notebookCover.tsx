@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router";
 import type { Notebook } from "../types/types";
 import { deleteNotebook } from "../api/notebookAPI";
+import { useState } from "react";
+import Loading from "./loading";
 
 export default function NotebookCover({ notebook, triggerRerender }: { notebook: Notebook; triggerRerender: React.Dispatch<React.SetStateAction<boolean>>; }) {
     const navigate = useNavigate();
+    const [loading, setIsLoading] = useState(false)
+
 
     function notebookCoverOnClick(e: React.MouseEvent<HTMLDivElement>) {
         const element = e.target as HTMLDivElement
@@ -12,10 +16,12 @@ export default function NotebookCover({ notebook, triggerRerender }: { notebook:
     }
 
     function noteDeleteOnClick(e: React.MouseEvent<HTMLDivElement>) {
+        setIsLoading(true)
         deleteNotebook(notebook._id)
             .then(res => {
                 if (res.status === "success") triggerRerender(true)
             })
+            .finally(() => setIsLoading(false))
     }
 
     function toggleOverlay(e: React.TouchEvent<HTMLDivElement>) {
@@ -40,6 +46,7 @@ export default function NotebookCover({ notebook, triggerRerender }: { notebook:
                     <div className="delete-icon w-7" id="delete-notebook" onClick={noteDeleteOnClick} />
                 </div>
             </div>
+            {loading && <Loading />}
         </div>
     )
 }

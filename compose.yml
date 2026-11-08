@@ -14,6 +14,8 @@ services:
             - .:/app
             - /app/node_modules
         command: npm run dev
+        depends_on:
+            - node-backend
 
 
     node-backend:
@@ -30,8 +32,10 @@ services:
         volumes:
             - ./backend:/app/backend
             - /app/backend/node_modules
-        command: npx nodemon index.js
-
+            - sqlite_data:/data
+        command: npx nodemon --ignore "backend/data/*.db" --ignore "backend/data/*.db-shm" --ignore "backend/data/*.db-wal" index.js
+        restart: unless-stopped
+        
 
     mongo-database:
         image: "docker.io/mongodb/mongodb-community-server:8.0.4-ubi9"
@@ -43,5 +47,8 @@ services:
             MONGODB_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
         volumes:
             - mongodb_data:/data/db
+
 volumes:
     mongodb_data:
+    sqlite_data:
+        driver: local

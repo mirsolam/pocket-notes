@@ -196,8 +196,24 @@ body{
 }
 
 .div-disabled{
-      pointer-events: none;
-    opacity: 0.6;
-    cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
+.loading{
+  display:flex; 
+  position: fixed;
+  width: 100dvw ;
+  height: 100dvh;
+  background-color: color-mix(in srgb, var(--light-note-border-color) 60%, transparent);
+}
+
+.spin{
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
