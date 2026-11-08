@@ -66,7 +66,15 @@ async function startServer() {
     }
 }
 
+function closeServer() {
+    console.log('Shutting down server...');
+    if (conn) conn.close()
+    console.log('SQLite connection closed');
+    process.exit(0);
+
+}
+
 startServer();
 
-process.on('SIGINT', () => { if (conn) conn.close() });
-process.on('SIGTERM', () => { if (conn) conn.close() });
+process.on('SIGINT', closeServer);
+process.on('SIGTERM', closeServer);
