@@ -6,7 +6,7 @@ const { getDashboardList } = require('./components/dashboard')
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const { init_db } = require('./sqlite-database');
-const PORT = process.env.PORT;
+const PORT = process.env.API_PORT;
 
 const app = express()
 let conn = null
