@@ -4,7 +4,12 @@ import { deleteNotebook } from "../api/notebookAPI";
 import { useState } from "react";
 import Loading from "./loading";
 
-export default function NotebookCover({ notebook, triggerRerender }: { notebook: Notebook; triggerRerender: React.Dispatch<React.SetStateAction<boolean>>; }) {
+export default function NotebookCover({ notebook, triggerRerender, setAlertMessage, setAlertColor }: {
+    notebook: Notebook;
+    triggerRerender: React.Dispatch<React.SetStateAction<boolean>>;
+    setAlertMessage: React.Dispatch<React.SetStateAction<string | undefined>>
+    setAlertColor: React.Dispatch<React.SetStateAction<string>>
+}) {
     const navigate = useNavigate();
     const [loading, setIsLoading] = useState(false)
 
@@ -20,6 +25,10 @@ export default function NotebookCover({ notebook, triggerRerender }: { notebook:
         deleteNotebook(notebook._id)
             .then(res => {
                 if (res.status === "success") triggerRerender(true)
+            })
+            .catch(error => {
+                setAlertColor("error")
+                setAlertMessage("Failed to delete. Please try again later.")
             })
             .finally(() => setIsLoading(false))
     }

@@ -3,11 +3,16 @@ import type { Note } from "../types/types";
 import { deleteNote } from "../api/noteAPI";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
+import ToastMessage from "./toastMessage";
 
-export default function NotePaper({ note, triggerRerender }: { note: Note; triggerRerender: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function NotePaper({ note, triggerRerender, setAlertMessage, setAlertColor }: {
+    note: Note;
+    triggerRerender: React.Dispatch<React.SetStateAction<boolean>>;
+    setAlertMessage: React.Dispatch<React.SetStateAction<string | undefined>>
+    setAlertColor: React.Dispatch<React.SetStateAction<string>>
+}) {
     const navigate = useNavigate();
     const [loading, setIsLoading] = useState(false)
-
 
     useEffect(() => {
         if (document.getElementById(`scroll-${note._id}`)) document.getElementById(`scroll-${note._id}`)!.innerText = note.content
@@ -25,6 +30,10 @@ export default function NotePaper({ note, triggerRerender }: { note: Note; trigg
         deleteNote(note._id)
             .then(res => {
                 if (res.status === "success") triggerRerender(true)
+            })
+            .catch(error => {
+                setAlertColor("error")
+                setAlertMessage("Failed to delete. Please try again later.")
             })
             .finally(() => setIsLoading(false))
     }

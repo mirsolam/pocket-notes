@@ -24,8 +24,15 @@ export default function LoginLanding() {
         })
     }
 
+    function onKeyDownCapture(e: React.KeyboardEvent<HTMLDivElement>) {
+        if (e.key.toLowerCase() === "enter") {
+            e.preventDefault()
+            document.getElementById("btn-login")?.click()
+        }
+    }
+
     return (
-        <div className="flex h-dvh w-dvw justify-center items-center p-10">
+        <div className="flex h-dvh w-dvw justify-center items-center p-10" onKeyDownCapture={onKeyDownCapture}>
             <div className="flex flex-col justify-center items-center text-center">
                 <div className="flex justify-center items-center">
                     <div className="app-logo mb-10 w-[10rem]" />
@@ -38,7 +45,7 @@ export default function LoginLanding() {
                     <PasswordInput displayName="Password" id="password-login" />
                 </div>
                 <div className="my-10">
-                    <button className="btn-submit h-[3rem] w-[10rem]" type="button" onClick={onLoginClick}>Login</button>
+                    <button className="btn-submit h-[3rem] w-[10rem]" type="button" id="btn-login" onClick={onLoginClick}>Login</button>
                 </div>
                 <div>Don't have an account? <a href="/signup" className="text-blue-700 underline decoration-blue-700">Sign-up</a></div>
                 <div><a href="/forgot-password" className="text-blue-700 underline decoration-blue-700">Forgot your password?</a></div>

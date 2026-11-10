@@ -4,13 +4,15 @@ import PasswordInput from "../component/passwordInput";
 import { forgotPassword, isEmailValid } from "../api/accountAPI";
 import { useNavigate } from "react-router";
 import Loading from "../component/loading";
+import ToastMessage from "../component/toastMessage";
 
 export default function ForgotPasswordLanding() {
     const [showChangePassword, setShowChangePassword] = useState(false)
     const navigate = useNavigate();
     const emailRef = useRef(null as unknown as string)
     const [loading, setIsLoading] = useState(false)
-
+    const [alertMessage, setAlertMessage] = useState<string>()
+    const [alertColor, setAlertColor] = useState("success")
 
     function onEmailSubmit() {
         const email = document.getElementById("email-forgotPassword") as HTMLInputElement
@@ -23,7 +25,8 @@ export default function ForgotPasswordLanding() {
                 }
             })
             .catch(error => {
-                console.log("Error")
+                setAlertColor("error")
+                setAlertMessage("Invalid email. Please try again later.")
             })
             .finally(() => setIsLoading(false))
     }
@@ -47,7 +50,8 @@ export default function ForgotPasswordLanding() {
                 if (res.status === "success") navigate("/login")
             })
             .catch(error => {
-                console.log("Error")
+                setAlertColor("error")
+                setAlertMessage("Failed to change password. Please try again later.")
             })
             .finally(() => setIsLoading(false))
     }
@@ -85,6 +89,7 @@ export default function ForgotPasswordLanding() {
                 </div>
             }
             {loading && <Loading />}
+            {alertMessage && <ToastMessage message={alertMessage} setMessage={setAlertMessage} color={alertColor} />}
         </div>
     )
 }
