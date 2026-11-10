@@ -4,11 +4,13 @@ import { registerAccount } from "../api/accountAPI";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import Loading from "../component/loading";
+import ToastMessage from "../component/toastMessage";
 
 export default function SignUpLanding() {
     const navigate = useNavigate();
     const [loading, setIsLoading] = useState(false)
-
+    const [alertMessage, setAlertMessage] = useState<string>()
+    const [alertColor, setAlertColor] = useState("success")
 
     function onRegisterClick() {
         const name = document.getElementById("name-signup") as HTMLInputElement
@@ -25,6 +27,10 @@ export default function SignUpLanding() {
         res.then(data => {
             navigate("/login")
         })
+            .catch(error => {
+                setAlertColor("error")
+                setAlertMessage("Failed to register. Please try again later.")
+            })
             .finally(() => setIsLoading(false))
 
     }
@@ -55,6 +61,7 @@ export default function SignUpLanding() {
                 <div>Already have an account? <a href="/login" className="text-blue-700 underline decoration-blue-700">Login</a></div>
             </div>
             {loading && <Loading />}
+            {alertMessage && <ToastMessage message={alertMessage} setMessage={setAlertMessage} color={alertColor} />}
         </div>
     )
 }

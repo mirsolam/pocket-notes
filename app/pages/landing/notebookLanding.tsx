@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router";
 import { checkSessionValidity } from "../api/accountAPI";
 import { getNotebook, saveNotebook } from "../api/notebookAPI";
 import GeneralInput from "../component/generalInput";
-import Toolbar from "../component/toolbar";
 import Loading from "../component/loading";
+import ToastMessage from "../component/toastMessage";
 
 export default function NotebookLanding() {
     const navigate = useNavigate();
@@ -13,7 +13,8 @@ export default function NotebookLanding() {
     const pageContentOrderRef = useRef(["", ""])
     const MAXHEIGHT = 683
     const [loading, setIsLoading] = useState(false)
-
+    const [alertMessage, setAlertMessage] = useState<string>()
+    const [alertColor, setAlertColor] = useState("success")
 
     useEffect(() => {
         setIsLoading(true)
@@ -37,6 +38,10 @@ export default function NotebookLanding() {
                                 if (leftSidePage) leftSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentLeft]
                                 if (rightSidePage) rightSidePage.innerText = pageContentOrderRef.current[pageNumberOrderRef.current.currentRight]
                             }
+                        })
+                        .catch(error => {
+                            setAlertColor("error")
+                            setAlertMessage("Failed to load data. Please try again later.")
                         })
                         .finally(() => setIsLoading(false))
             })
@@ -244,6 +249,16 @@ export default function NotebookLanding() {
                 currentRight: pageNumberOrderRef.current.currentRight,
                 content: pageContentOrderRef.current
             })
+                .then(res => {
+                    if (res.status === "success") {
+                        setAlertColor("success")
+                        setAlertMessage("Saved.")
+                    }
+                })
+                .catch(error => {
+                    setAlertColor("error")
+                    setAlertMessage("Failed to save. Please try again later.")
+                })
         }
     }
 
@@ -281,6 +296,7 @@ export default function NotebookLanding() {
             </div>
             <div className="note notebook-a4 formatter right p-3" id="note-formatter" >Sup</div>
             {loading && <Loading />}
+            {alertMessage && <ToastMessage message={alertMessage} setMessage={setAlertMessage} color={alertColor} />}
         </div>
     )
 }

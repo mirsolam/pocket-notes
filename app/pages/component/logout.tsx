@@ -3,7 +3,10 @@ import { logout } from "../api/accountAPI"
 import { useState } from "react";
 import Loading from "./loading";
 
-export default function Logout() {
+export default function Logout({ setAlertMessage, setAlertColor }: {
+    setAlertMessage: React.Dispatch<React.SetStateAction<string | undefined>>
+    setAlertColor: React.Dispatch<React.SetStateAction<string>>
+}) {
     const navigate = useNavigate();
     const [loading, setIsLoading] = useState(false)
 
@@ -13,6 +16,10 @@ export default function Logout() {
         logout()
             .then(res => {
                 if (res.status === "success") navigate("/login")
+            })
+            .catch(error => {
+                setAlertColor("error")
+                setAlertMessage("Failed to logout. Please try again later.")
             })
             .finally(() => setIsLoading(false))
     }

@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { checkSessionValidity } from "../api/accountAPI";
 import { getNote, saveNote } from "../api/noteAPI";
-import Toolbar from "../component/toolbar";
 import Loading from "../component/loading";
+import ToastMessage from "../component/toastMessage";
 
 export default function NoteLanding() {
     const navigate = useNavigate()
     const location = useLocation()
     const [loading, setIsLoading] = useState(false)
-
+    const [alertMessage, setAlertMessage] = useState<string>()
+    const [alertColor, setAlertColor] = useState("success")
 
     useEffect(() => {
         setIsLoading(true)
@@ -25,6 +26,10 @@ export default function NoteLanding() {
                                 if (res.status === "success" && content)
                                     content.innerText = res.data.content
 
+                            })
+                            .catch(error => {
+                                setAlertColor("error")
+                                setAlertMessage("Failed to load data. Please try again later.")
                             })
                             .finally(() => setIsLoading(false))
                     }
@@ -57,6 +62,16 @@ export default function NoteLanding() {
             const content = document.getElementById("notecontent") as HTMLDivElement
             if (e.key.toLowerCase() !== "enter") e.preventDefault()
             saveNote({ _id: id, content: content.innerText })
+                .then(res => {
+                    if (res.status === "success") {
+                        setAlertColor("success")
+                        setAlertMessage("Saved.")
+                    }
+                })
+                .catch(error => {
+                    setAlertColor("error")
+                    setAlertMessage("Failed to save. Please try again later.")
+                })
         }
     }
 
@@ -66,6 +81,7 @@ export default function NoteLanding() {
             {/* <Toolbar /> */}
             <button type="button" className="btn-cancel text-center content-center h-10 w-40" onClick={backButtonOnClick}>Back</button>
             {loading && <Loading />}
+            {alertMessage && <ToastMessage message={alertMessage} setMessage={setAlertMessage} color={alertColor} />}
         </div>
     )
 }

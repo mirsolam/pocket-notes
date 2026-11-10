@@ -1,4 +1,4 @@
-# For development image
+# For production image
 FROM node:26-bookworm-slim
 
 RUN npm install -g npm@12.0.2
