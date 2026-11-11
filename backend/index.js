@@ -7,11 +7,12 @@ const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const { init_db } = require('./sqlite-database');
 const PORT = process.env.API_PORT;
+const REACT = process.env.REACT_URL
 
 const app = express()
 let conn = null
 app.use(cors({
-    origin: "http://localhost:3100",
+    origin: REACT,
     credentials: true
 }))
 app.use(cookieParser())
