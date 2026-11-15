@@ -1,6 +1,6 @@
 const { checkAndUpdateSession } = require('./account');
 const crypto = require("crypto");
-const { get_db } = require('../sqlite-database');
+const { conn } = require('../sqlite-database');
 
 
 function encryptContent(content) {
@@ -45,9 +45,7 @@ async function createNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
-        const conn = get_db()
         const note = conn.prepare(`INSERT INTO notes (userId) VALUES (?) RETURNING _id, content`).get(req.cookies.userId)
-        conn.close()
         return res.status(200).json({ status: "success", data: note, message: "Note created successfully." })
     }
     catch (error) {
@@ -58,14 +56,11 @@ async function createNote(req, res) {
 
 async function saveNote(req, res) {
     try {
-        console.log("Here")
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, content } = req.body
         const encryptedContent = encryptContent(content)
-        const conn = get_db()
         const note = conn.prepare(`UPDATE notes SET content = ? WHERE _id = ? RETURNING _id, content`).get(encryptedContent, _id)
-        conn.close()
         note.content = decryptContent(note.content)
 
         return res.status(200).json({ status: "success", data: note, message: "Note saved successfully." })
@@ -81,9 +76,7 @@ async function getNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const conn = get_db()
         const note = conn.prepare(`SELECT _id, content FROM notes WHERE _id = ?`).get(_id)
-        conn.close()
         if (note.content) note.content = decryptContent(note.content)
         return res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })
     }
@@ -98,9 +91,7 @@ async function deleteNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const conn = get_db()
         conn.prepare(`DELETE FROM notes WHERE _id = ?`).run(_id)
-        conn.close()
 
         return res.status(200).json({ status: "success", message: "Note deleted successfully." })
     }

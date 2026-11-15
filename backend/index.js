@@ -5,12 +5,12 @@ const { createNotebook, getNotebook, saveNotebook, deleteNotebook } = require('.
 const { getDashboardList } = require('./components/dashboard')
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
-const { init_db } = require('./sqlite-database');
+const { init_db, conn } = require('./sqlite-database');
 const PORT = process.env.API_PORT;
 const REACT = process.env.REACT_URL
+const VITE_APP_API_URL = process.env.VITE_APP_API_URL
 
 const app = express()
-let conn = null
 app.use(cors({
     origin: REACT,
     credentials: true
@@ -55,21 +55,21 @@ app.get('/dashboard/', getDashboardList)
 
 async function startServer() {
     try {
-        conn = init_db()
+        init_db()
         app.listen(PORT, () => {
-            console.log(`Express listening on local: http://localhost:${PORT}/`)
+            console.log(`Express listening on local: ${VITE_APP_API_URL}`)
         });
     }
     catch (error) {
         console.log("Failed to start server")
-        if (conn) conn.close()
+        conn.close()
         process.exit(1)
     }
 }
 
 function closeServer() {
     console.log('Shutting down server...');
-    if (conn) conn.close()
+    conn.close()
     console.log('SQLite connection closed');
     process.exit(0);
 
