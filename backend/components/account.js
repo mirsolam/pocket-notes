@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
-const { get_db } = require('../sqlite-database');
+const { conn } = require('../sqlite-database');
 
 const cookieOptions = {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
 }
@@ -30,45 +30,37 @@ async function verifyPassword(plainPassword, storedHash) {
 }
 
 async function findUser(email) {
-    const conn = get_db()
     const user = conn.prepare(`SELECT * FROM users WHERE email = ?`).get(email)
-    conn.close()
-
     return user
-
 }
 
 async function checkAndUpdateSession(sessionId) {
     try {
-        const conn = get_db()
         const allSessions = conn.prepare(`SELECT _id, expiresAt FROM sessions`).all()
-
         let currentSession = null;
         let expiredSessions = [];
         let placeholder = ""
-        allSessions.map(item => {
-            if (new Date(item.expiresAt).toISOString() < new Date(Date.now()).toISOString()) {
-                expiredSessions.push(item._id)
-                placeholder += "?, "
-            }
-            if (item._id === sessionId) currentSession = item
-        })
+        if (allSessions.length > 0)
+            allSessions.map(item => {
+                if (new Date(item.expiresAt).toISOString() < new Date(Date.now()).toISOString()) {
+                    expiredSessions.push(item._id)
+                    placeholder += "?, "
+                }
+                else if (item._id === sessionId) currentSession = item
+            })
 
         placeholder = placeholder.slice(0, placeholder.length - 2)
 
         if (expiredSessions.length > 0)
             conn.prepare(`DELETE FROM sessions where _id IN (${placeholder})`).run(...expiredSessions)
 
-        if (!currentSession || new Date(currentSession.expiresAt).toISOString() < new Date(Date.now()).toISOString()) {
-            conn.close()
+        if (!currentSession || (currentSession && new Date(currentSession.expiresAt).toISOString() < new Date(Date.now()).toISOString())) {
             return false
         }
 
         conn.prepare(`UPDATE sessions SET expiresAt = ? WHERE _id = ?`).run(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), sessionId)
-        conn.close()
 
         return true
-
     }
     catch (error) {
         console.log("Error: ", error)
@@ -89,9 +81,7 @@ async function regitserAccount(req, res) {
             })
 
         if (hashedPassword !== "") {
-            const conn = get_db()
             conn.prepare(`INSERT INTO users (name, email, password) VALUES (?,?,?)`).run(name, email, hashedPassword)
-            conn.close()
 
             return res.json({ status: "success", message: "Registartion successful!" })
         }
@@ -115,9 +105,7 @@ async function login(req, res) {
         const match = await verifyPassword(password, user.password)
 
         if (match) {
-            const conn = get_db()
             conn.prepare(`INSERT INTO sessions (_id, userId) VALUES(?,?)`).run(sessionId, user._id)
-            conn.close()
 
             setCookies(res, sessionId, user._id)
 
@@ -146,9 +134,7 @@ async function checkSessionValidity(req, res) {
 
 async function logout(req, res) {
     try {
-        const conn = get_db()
         conn.prepare(`DELETE FROM sessions WHERE _id = ?`).run(req.cookies.sessionId)
-        conn.close()
 
         removeCookies(res)
         return res.json({ status: "success", message: "Logout successfully." })
@@ -183,9 +169,7 @@ async function forgotPassword(req, res) {
             })
 
         if (hashedPassword !== "") {
-            const conn = get_db()
             conn.prepare(`UPDATE users SET password = ? WHERE email = ?`).run(hashedPassword, email)
-            conn.close()
 
             return res.status(200).json({ status: "success", message: "Password change successful!" })
         }

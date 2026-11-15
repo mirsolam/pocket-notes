@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const dbDirectory = path.join(__dirname, 'data');
 fs.mkdirSync(dbDirectory, { recursive: true });
 
+const conn = get_db()
+
 function configure_connection(conn) {
     //WAL mode: better concurrency (concurrent reads during writes)
     conn.exec("PRAGMA journal_mode=WAL")
@@ -27,14 +29,13 @@ function configure_connection(conn) {
 }
 
 function get_db() {
-    const conn = new DatabaseSync(
+    const newConn = new DatabaseSync(
         path.join(dbDirectory, 'app.db')
     );
-    return conn
+    return newConn
 }
 
 function init_db() {
-    const conn = get_db()
     configure_connection(conn)
     conn.exec(`
             CREATE TABLE IF NOT EXISTS users (
@@ -76,7 +77,6 @@ function init_db() {
         FOREIGN KEY (userId) REFERENCES users(_id)
     )
         `)
-    conn.close()
 }
 
-module.exports = { init_db, get_db }
+module.exports = { init_db, get_db, conn }
