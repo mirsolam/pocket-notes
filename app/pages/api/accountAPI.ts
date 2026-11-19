@@ -12,7 +12,7 @@ export async function registerAccount(data: User) {
     if (!data.name || !data.email || !data.password) return { status: "failed", message: "Invalid values." }
 
     credentialStringOperations(data)
-    const res = await fetch(`${API}/users/register`, {
+    const res = await fetch(`/api/users/register`, {
         method: 'POST',
         credentials: "include",
         body: JSON.stringify(data),
@@ -28,7 +28,7 @@ export async function login(data: Login) {
     if (!data.email || !data.password) return { status: "failed", message: "Invalid values." }
 
     credentialStringOperations(data)
-    const res = await fetch(`${API}/users/login`, {
+    const res = await fetch(`/api/users/login`, {
         method: 'POST',
         credentials: "include",
         body: JSON.stringify(data),
@@ -41,7 +41,7 @@ export async function login(data: Login) {
 }
 
 export async function checkSessionValidity() {
-    const res = await fetch(`${API}/users/checksession`, {
+    const res = await fetch(`$/api/users/checksession`, {
         method: 'GET',
         credentials: "include",
     })
@@ -50,7 +50,7 @@ export async function checkSessionValidity() {
 }
 
 export async function logout() {
-    const res = await fetch(`${API}/users/logout`, {
+    const res = await fetch(`/api/users/logout`, {
         method: 'GET',
         credentials: "include",
     })
@@ -62,7 +62,7 @@ export async function isEmailValid(email: string) {
     if (!email || email.trim().length === 0) return { status: "failed", message: "Invalid values." }
 
     credentialStringOperations({ email: email })
-    const res = await fetch(`${API}/users/isemailvalid/${email}`, {
+    const res = await fetch(`/api/users/isemailvalid/${email}`, {
         method: 'GET',
         credentials: "include",
         headers: {
@@ -77,7 +77,7 @@ export async function forgotPassword(data: Login) {
     if (!data.email || !data.password) return { status: "failed", message: "Invalid values." }
 
     credentialStringOperations(data)
-    const res = await fetch(`${API}/users/forgotpassword`, {
+    const res = await fetch(`/api/users/forgotpassword`, {
         method: 'POST',
         credentials: "include",
         body: JSON.stringify(data),
