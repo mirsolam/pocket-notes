@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       port: 3100,
       allowedHosts: true,
       proxy: {
-        '/api': env.API
+        '/api': env.APP_API_URL
       },
       watch: {
         ignored: [
