@@ -15,7 +15,11 @@ export default defineConfig(({ mode }) => {
       port: 3100,
       allowedHosts: true,
       proxy: {
-        '/api': env.VITE_APP_API_URL
+        '/api': {
+          target: env.VITE_APP_API_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
       },
       watch: {
         ignored: [

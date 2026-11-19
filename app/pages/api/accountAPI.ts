@@ -41,7 +41,7 @@ export async function login(data: Login) {
 }
 
 export async function checkSessionValidity() {
-    const res = await fetch(`$/api/users/checksession`, {
+    const res = await fetch(`/api/users/checksession`, {
         method: 'GET',
         credentials: "include",
     })
