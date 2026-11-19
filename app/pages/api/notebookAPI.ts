@@ -3,7 +3,7 @@ import type { Notebook } from "../types/types"
 const API = import.meta.env.VITE_APP_API_URL
 
 export async function createNotebook() {
-    const res = await fetch(`${API}/notebooks/create`, {
+    const res = await fetch(`/api/notebooks/create`, {
         method: 'POST',
         credentials: "include",
     })
@@ -13,7 +13,7 @@ export async function createNotebook() {
 
 export async function saveNotebook(data: Notebook) {
     if (!data._id || !data.content || data.currentLeft === null || data.currentLeft === undefined || !data.currentRight) return { status: "failed", message: "Invalid values." }
-    const res = await fetch(`${API}/notebooks/save`, {
+    const res = await fetch(`/api/notebooks/save`, {
         method: 'POST',
         credentials: "include",
         body: JSON.stringify(data),
@@ -27,7 +27,7 @@ export async function saveNotebook(data: Notebook) {
 
 export async function getNotebook(id: string) {
     if (!id) return { status: "failed", message: "Invalid values." }
-    const res = await fetch(`${API}/notebooks/${id}`, {
+    const res = await fetch(`/api/notebooks/${id}`, {
         method: 'GET',
         credentials: "include",
     })
@@ -37,7 +37,7 @@ export async function getNotebook(id: string) {
 
 export async function deleteNotebook(_id: string) {
     if (!_id) return { status: "failed", message: "Invalid values." }
-    const res = await fetch(`${API}/notebooks/${_id}`, {
+    const res = await fetch(`/api/notebooks/${_id}`, {
         method: 'DELETE',
         credentials: "include",
     })
