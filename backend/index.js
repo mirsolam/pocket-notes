@@ -9,6 +9,7 @@ const { init_db, conn } = require('./sqlite-database');
 const PORT = process.env.API_PORT;
 const VITE_APP_API_URL = process.env.VITE_APP_API_URL
 const REACT_LOCALNETWORK_URL = process.env.REACT_LOCALNETWORK_URL
+const REACT_LOCALNETWORK_DOMAIN_URL = process.env.REACT_LOCALNETWORK_DOMAIN_URL
 const REACT_LOCALHOST_URL = process.env.REACT_LOCALHOST_URL
 const REACT_TAILSCALE_SHORT_DOMAIN = process.env.REACT_TAILSCALE_SHORT_DOMAIN
 const REACT_TAILSCALE_FULL_DOMAIN = process.env.REACT_TAILSCALE_FULL_DOMAIN
@@ -17,6 +18,7 @@ const app = express()
 app.use(cors({
     origin: [
         REACT_LOCALNETWORK_URL,
+        REACT_LOCALNETWORK_DOMAIN_URL,
         REACT_LOCALHOST_URL,
         REACT_TAILSCALE_SHORT_DOMAIN,
         REACT_TAILSCALE_FULL_DOMAIN,
