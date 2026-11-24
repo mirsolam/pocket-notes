@@ -1,0 +1,11 @@
+:3100 {
+    # Forward API requests to Express
+    handle_path /api/* {
+        reverse_proxy node-backend:3500
+    }
+
+    # Forward everything else to React Router
+    handle {
+        reverse_proxy react-web:3100
+    }
+}

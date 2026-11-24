@@ -14,8 +14,8 @@ services:
             NODE_ENV: production
             PORT: 3100
             HOST: 0.0.0.0
-        ports:
-            - "0.0.0.0:3100:3100"
+        # ports:
+        #     - "0.0.0.0:3100:3100"
         depends_on:
             - node-backend
         restart: unless-stopped
@@ -33,10 +33,22 @@ services:
             NODE_ENV: production
             PORT: 3500
             HOST: 0.0.0.0
-        ports:
-            - "0.0.0.0:3500:3500"
+        # ports:
+        #     - "0.0.0.0:3500:3500"
         volumes:
             - sqlite_data:/data
+        restart: unless-stopped
+        
+    caddy:
+        build:
+            context: .
+            dockerfile: caddy.Dockerfile
+        image: pocket-notes-caddy:latest
+        ports:
+            - "3100:3100"
+        depends_on:
+            - react-web
+            - node-backend
         restart: unless-stopped
 
 volumes:
