@@ -8,16 +8,10 @@
     "backend": {
       "root": "backend",
       "framework": "express",
-      "routes": [
+      "rewrites": [
         {
-          "src": "/api/(.*)",
-          "transforms": [
-            {
-              "type": "request.path",
-              "op": "set",
-              "args": "/$1"
-            }
-          ]
+          "source": "/api/:path(.*)?",
+          "destination": "/:path"
         }
       ]
     }
