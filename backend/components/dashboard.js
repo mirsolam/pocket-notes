@@ -1,13 +1,14 @@
 const { checkAndUpdateSession } = require('./account');
 const { decryptContent } = require('./note');
-const { conn } = require('../sqlite-database');
+const { conn, buildSqliteStatement } = require('../sqlite-database');
 
 async function getDashboardList(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
-        const notes = conn.prepare(`SELECT _id, content FROM notes WHERE userId = ?`).all(req.cookies.userId)
-        const notebooks = conn.prepare(`SELECT _id, title, currentLeft, currentRight FROM notebooks WHERE userId = ?`).all(req.cookies.userId)
+        const notes = await buildSqliteStatement(`SELECT _id, content FROM notes WHERE userId = ?`, [req.cookies.userId], false, true)
+        const notebooks = await buildSqliteStatement(`SELECT _id, title, currentLeft, currentRight FROM notebooks WHERE userId = ?`, [req.cookies.userId], false, true)
+
 
         notes.map(item => {
             if (item.content) item.content = decryptContent(item.content)

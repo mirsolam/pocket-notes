@@ -1,6 +1,6 @@
 const { checkAndUpdateSession } = require('./account');
 const crypto = require("crypto");
-const { conn } = require('../sqlite-database');
+const { conn, buildSqliteStatement } = require('../sqlite-database');
 
 
 function encryptContent(content) {
@@ -45,7 +45,7 @@ async function createNote(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
-        const note = conn.prepare(`INSERT INTO notes (userId) VALUES (?) RETURNING _id, content`).get(req.cookies.userId)
+        const note = await buildSqliteStatement(`INSERT INTO notes (userId) VALUES (?) RETURNING _id, content`, [req.cookies.userId], true, false)
         return res.status(200).json({ status: "success", data: note, message: "Note created successfully." })
     }
     catch (error) {
@@ -60,7 +60,8 @@ async function saveNote(req, res) {
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const { _id, content } = req.body
         const encryptedContent = encryptContent(content)
-        const note = conn.prepare(`UPDATE notes SET content = ? WHERE _id = ? RETURNING _id, content`).get(encryptedContent, _id)
+        const note = await buildSqliteStatement(`UPDATE notes SET content = ? WHERE _id = ? RETURNING _id, content`, [encryptedContent, _id], true, false)
+
         note.content = decryptContent(note.content)
 
         return res.status(200).json({ status: "success", data: note, message: "Note saved successfully." })
@@ -76,7 +77,8 @@ async function getNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const note = conn.prepare(`SELECT _id, content FROM notes WHERE _id = ?`).get(_id)
+        const note = await buildSqliteStatement(`SELECT _id, content FROM notes WHERE _id = ?`, [_id], true, false)
+
         if (note.content) note.content = decryptContent(note.content)
         return res.status(200).json({ status: "success", data: note, message: "Note retrieved successfully." })
     }
@@ -91,7 +93,7 @@ async function deleteNote(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        conn.prepare(`DELETE FROM notes WHERE _id = ?`).run(_id)
+        await buildSqliteStatement(`DELETE FROM notes WHERE _id = ?`, [_id], false, false)
 
         return res.status(200).json({ status: "success", message: "Note deleted successfully." })
     }

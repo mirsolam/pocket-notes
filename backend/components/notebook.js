@@ -1,12 +1,12 @@
 const { checkAndUpdateSession } = require('./account')
 const { encryptContent, decryptContent } = require('./note');
-const { conn } = require('../sqlite-database');
+const { conn, buildSqliteStatement } = require('../sqlite-database');
 
 async function createNotebook(req, res) {
     try {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
-        const notebook = conn.prepare(`INSERT INTO notebooks (userId) VALUES (?) RETURNING _id`).get(req.cookies.userId)
+        const notebook = await buildSqliteStatement(`INSERT INTO notebooks (userId) VALUES (?) RETURNING _id`, [req.cookies.userId], true, false)
 
         return res.status(200).json({ status: "success", data: notebook, message: "Notebook created successfully." })
     }
@@ -25,7 +25,7 @@ async function saveNotebook(req, res) {
             content[index] = encryptContent(content[index])
         })
 
-        const notebook = conn.prepare(`UPDATE notebooks SET title = ?, currentLeft = ?, currentRight = ?, content = ? WHERE _id = ? RETURNING _id`).get(title, currentLeft, currentRight, JSON.stringify(content), _id)
+        const notebook = await buildSqliteStatement(`UPDATE notebooks SET title = ?, currentLeft = ?, currentRight = ?, content = ? WHERE _id = ? RETURNING _id`, [title, currentLeft, currentRight, JSON.stringify(content), _id], true, false)
 
         return res.status(200).json({ status: "success", data: notebook, message: "Notebook saved successfully." })
     }
@@ -40,7 +40,7 @@ async function getNotebook(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        const notebook = conn.prepare(`SELECT _id, title, currentLeft, currentRight, content FROM notebooks WHERE _id = ?`).get(_id)
+        const notebook = await buildSqliteStatement(`SELECT _id, title, currentLeft, currentRight, content FROM notebooks WHERE _id = ?`, [_id], true, false)
 
         const content = JSON.parse(notebook.content)
         content.map((item, index) => {
@@ -61,7 +61,8 @@ async function deleteNotebook(req, res) {
         const valid = await checkAndUpdateSession(req.cookies.sessionId)
         if (!valid) return res.status(401).json({ status: "failed", message: "Session expired." })
         const _id = req.params._id
-        conn.prepare(`DELETE FROM notebooks WHERE _id = ?`).run(_id)
+        await buildSqliteStatement(`DELETE FROM notebooks WHERE _id = ?`, [_id], false, false)
+
 
         return res.status(200).json({ status: "success", message: "Notebook deleted successfully." })
     }

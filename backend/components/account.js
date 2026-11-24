@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
-const { conn } = require('../sqlite-database');
+const { conn, buildSqliteStatement } = require('../sqlite-database');
 
 const cookieOptions = {
     httpOnly: true,
@@ -30,13 +30,13 @@ async function verifyPassword(plainPassword, storedHash) {
 }
 
 async function findUser(email) {
-    const user = conn.prepare(`SELECT * FROM users WHERE email = ?`).get(email)
+    const user = await buildSqliteStatement(`SELECT * FROM users WHERE email = ?`, [email], true, false)
     return user
 }
 
 async function checkAndUpdateSession(sessionId) {
     try {
-        const allSessions = conn.prepare(`SELECT _id, expiresAt FROM sessions`).all()
+        const allSessions = await buildSqliteStatement(`SELECT _id, expiresAt FROM sessions`, null, false, true)
         let currentSession = null;
         let expiredSessions = [];
         let placeholder = ""
@@ -52,13 +52,14 @@ async function checkAndUpdateSession(sessionId) {
         placeholder = placeholder.slice(0, placeholder.length - 2)
 
         if (expiredSessions.length > 0)
-            conn.prepare(`DELETE FROM sessions where _id IN (${placeholder})`).run(...expiredSessions)
+            await buildSqliteStatement(`DELETE FROM sessions where _id IN (${placeholder})`, expiredSessions, false, false)
 
         if (!currentSession || (currentSession && new Date(currentSession.expiresAt).toISOString() < new Date(Date.now()).toISOString())) {
             return false
         }
 
-        conn.prepare(`UPDATE sessions SET expiresAt = ? WHERE _id = ?`).run(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), sessionId)
+        await buildSqliteStatement(`UPDATE sessions SET expiresAt = ? WHERE _id = ?`, [new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), sessionId], false, false)
+
 
         return true
     }
@@ -81,7 +82,7 @@ async function regitserAccount(req, res) {
             })
 
         if (hashedPassword !== "") {
-            conn.prepare(`INSERT INTO users (name, email, password) VALUES (?,?,?)`).run(name, email, hashedPassword)
+            await buildSqliteStatement(`INSERT INTO users (name, email, password) VALUES (?,?,?)`, [name, email, hashedPassword], false, false)
 
             return res.json({ status: "success", message: "Registartion successful!" })
         }
@@ -105,7 +106,7 @@ async function login(req, res) {
         const match = await verifyPassword(password, user.password)
 
         if (match) {
-            conn.prepare(`INSERT INTO sessions (_id, userId) VALUES(?,?)`).run(sessionId, user._id)
+            await buildSqliteStatement(`INSERT INTO sessions (_id, userId) VALUES(?,?)`, [sessionId, user._id], false, false)
 
             setCookies(res, sessionId, user._id)
 
@@ -134,7 +135,7 @@ async function checkSessionValidity(req, res) {
 
 async function logout(req, res) {
     try {
-        conn.prepare(`DELETE FROM sessions WHERE _id = ?`).run(req.cookies.sessionId)
+        await buildSqliteStatement(`DELETE FROM sessions WHERE _id = ?`, [req.cookies.sessionId], false, false)
 
         removeCookies(res)
         return res.json({ status: "success", message: "Logout successfully." })
@@ -169,7 +170,7 @@ async function forgotPassword(req, res) {
             })
 
         if (hashedPassword !== "") {
-            conn.prepare(`UPDATE users SET password = ? WHERE email = ?`).run(hashedPassword, email)
+            await buildSqliteStatement(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email], false, false)
 
             return res.status(200).json({ status: "success", message: "Password change successful!" })
         }
