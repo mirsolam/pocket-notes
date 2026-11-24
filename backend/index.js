@@ -10,14 +10,6 @@ const VITE_APP_API_URL = process.env.VITE_APP_API_URL
 const USE_PUBLIC_SQLITE = process.env.USE_PUBLIC_SQLITE
 
 const app = express()
-app.use((req, res, next) => {
-    console.log({
-        url: req.url,
-        originalUrl: req.originalUrl,
-        baseUrl: req.baseUrl
-    });
-    next();
-});
 app.use(cookieParser())
 app.use(express.json())
 
