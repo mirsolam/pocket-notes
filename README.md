@@ -1,85 +1,83 @@
-# Welcome to React Router!
+# Welcome to Pocket Notes!
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A simple solution for carrying your notes anywhere without the restrictions of platform or os.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 🚀 Lightweight with minimal dependencies other than for frameworks and configurations.
+- ⚡️ SQLite for hosting on any device.
+- 🔒 Password and note/notebook content encryption.
 
 ## Getting Started
 
 ### Installation
 
-Install the dependencies:
+Install Docker or Podman:
+
+- Docker: https://www.docker.com/products/docker-desktop/
+- Podman: https://podman.io/
+
+### Create .env file in project root
+
+Go to the project root directory:
+1. Create a .env and add the following varaibles: 
 
 ```bash
-npm install
+API_PORT=3500
+REACT_PORT=3100
+VITE_APP_API_URL=/api
+CONTENT_ALGORITHM=aes-256-gcm
+CONTENT_IV_LENGTH=12
+CONTENT_ENCRYPTION_KEY=
 ```
 
-### Development
-
-Start the development server with HMR:
+2. Generate your own AES-256-GCM content encryption key in a terminal using on of the commands below and save the output in the CONTENT_ENCRYPTION_KEY variable:
 
 ```bash
-npm run dev
+openssl rand -hex 32
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+Or
 
 ```bash
-npm run build
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-## Deployment
+## Building and start containers
 
-### Docker Deployment
-
-To build and run using Docker:
+Using your prefered container application, or a terminal, open a terminal in the project root directory and run:
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+podman-compose up --build
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+or
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+docker compose up --build
 ```
 
-## Styling
+The application will be available at: http://localhost:3100
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+## Stopping and removing containers
+To stop the containers either use the stop button in the docker/podman desktop application or press the below keys in the container terminal:
 
----
+`
+Ctrl C
+`
 
-Built with ❤️ using React Router.
+To remove the containers, first stop them using `Ctrl C` then enter the below command in the project root directory:
+
+```bash
+podman-compose down
+```
+
+or
+
+```bash
+docker compose down
+```
+
+
+
+Built with ❤️ in Finland using React Router.
