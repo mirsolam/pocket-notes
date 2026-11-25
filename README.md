@@ -37,7 +37,7 @@ CONTENT_ENCRYPTION_KEY=
 openssl rand -hex 32
 ```
 
-Or
+or
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
