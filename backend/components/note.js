@@ -8,6 +8,10 @@ function encryptContent(content) {
     const CONTENT_IV_LENGTH = parseInt(process.env.CONTENT_IV_LENGTH)
     const CONTENT_ENCRYPTION_KEY = Buffer.from(process.env.CONTENT_ENCRYPTION_KEY, "hex");
 
+    if (!CONTENT_ENCRYPTION_KEY || !CONTENT_IV_LENGTH || !CONTENT_ALGORITHM) {
+        throw new Error("Missing encryption variables.");
+    }
+
     const iv = crypto.randomBytes(CONTENT_IV_LENGTH);
     const cipher = crypto.createCipheriv(CONTENT_ALGORITHM, CONTENT_ENCRYPTION_KEY, iv);
 
