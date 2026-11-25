@@ -43,9 +43,9 @@ Or
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-## Building and start containers
+## Build and start the containers
 
-Using your prefered container application, or a terminal, open a terminal in the project root directory and run:
+Using your preferred container application, or a terminal, open a terminal in the project root directory and run:
 
 ```bash
 podman-compose up --build
@@ -59,11 +59,11 @@ docker compose up --build
 
 The application will be available at: http://localhost:3100
 
-## Stopping and removing containers
+## Stop and remove the containers
 To stop the containers either use the stop button in the docker/podman desktop application or press the below keys in the container terminal:
 
 `
-Ctrl C
+Ctrl + C
 `
 
 To remove the containers, first stop them using `Ctrl C` then enter the below command in the project root directory:
